@@ -1,6 +1,9 @@
-import { Play, Undo2, Redo2, PanelRightOpen, PanelRightClose } from 'lucide-react'
+import { useRef } from 'react'
+import { Play, Undo2, Redo2, PanelRightOpen, PanelRightClose, Download, FileDown, FileJson } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useEditorStore } from '@/store/useEditorStore'
+import { exportProjectToJSON } from '@/utils/exportJson'
+import { generateId } from '@/utils/id'
 import IconButton from '@/components/shared/IconButton'
 import Button from '@/components/shared/Button'
 
@@ -18,10 +21,60 @@ export default function Toolbar({ onUndo, onRedo, canUndo, canRedo }: ToolbarPro
   const presentationId = useEditorStore((s) => s.presentationId)
   const showPropertiesPanel = useEditorStore((s) => s.showPropertiesPanel)
   const togglePropertiesPanel = useEditorStore((s) => s.togglePropertiesPanel)
+  const jsonInputRef = useRef<HTMLInputElement>(null)
 
   const handlePresent = () => {
     if (presentationId) {
       navigate(`/present/${presentationId}`)
+    }
+  }
+
+  const handleExportJSON = () => {
+    const state = useEditorStore.getState()
+    exportProjectToJSON(state.title, state.settings, state.slides)
+  }
+
+  const handleExportHTML = () => {
+    // HTML export — will be wired in Step 6
+    import('@/utils/exportHtml').then(({ exportProjectToHTML }) => {
+      const state = useEditorStore.getState()
+      exportProjectToHTML(state.title, state.settings, state.slides)
+    })
+  }
+
+  const handleOpenJSON = () => {
+    jsonInputRef.current?.click()
+  }
+
+  const handleJSONFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    try {
+      const text = await file.text()
+      const data = JSON.parse(text)
+      const { validateAndParseProject } = await import('@/utils/importJson')
+      const result = validateAndParseProject(data)
+
+      if (!result.ok) {
+        alert('导入失败：' + result.error)
+        return
+      }
+
+      const id = generateId()
+      const store = useEditorStore.getState()
+      store.setPresentation(id, result.data.project.title)
+      if (store.importSlidesFromJSON) {
+        store.importSlidesFromJSON(result.data.project)
+      }
+      navigate(`/editor/${id}`)
+    } catch (err) {
+      console.error('Failed to import JSON:', err)
+      alert('导入失败，请检查文件是否为有效的 JSON 格式')
+    }
+
+    if (jsonInputRef.current) {
+      jsonInputRef.current.value = ''
     }
   }
 
@@ -63,6 +116,36 @@ export default function Toolbar({ onUndo, onRedo, canUndo, canRedo }: ToolbarPro
           onClick={togglePropertiesPanel}
         >
           {showPropertiesPanel ? <PanelRightClose size={18} /> : <PanelRightOpen size={18} />}
+        </IconButton>
+
+        <div className="w-px h-6 bg-stone-200 mx-1" />
+
+        <IconButton
+          tooltip="导出 JSON"
+          onClick={handleExportJSON}
+        >
+          <Download size={18} />
+        </IconButton>
+
+        <IconButton
+          tooltip="导出 HTML"
+          onClick={handleExportHTML}
+        >
+          <FileDown size={18} />
+        </IconButton>
+
+        <input
+          ref={jsonInputRef}
+          type="file"
+          accept=".json"
+          className="hidden"
+          onChange={handleJSONFileChange}
+        />
+        <IconButton
+          tooltip="打开 JSON"
+          onClick={handleOpenJSON}
+        >
+          <FileJson size={18} />
         </IconButton>
 
         <Button
