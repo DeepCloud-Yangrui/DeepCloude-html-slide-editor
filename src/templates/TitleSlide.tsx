@@ -1,6 +1,7 @@
 import type { TemplateComponentProps } from './registry'
 import AnimatedElement from './AnimatedElement'
 import InlineText from '@/components/shared/InlineText'
+import { toInlineStyle } from '@/utils/elementStyle'
 import type { TextContent } from '@/types'
 
 export default function TitleSlide({
@@ -42,7 +43,10 @@ export default function TitleSlide({
       <div className="relative z-10 flex flex-col items-center gap-4 max-w-2xl px-8">
         {heading && (
           <AnimatedElement element={heading} animated={animated} index={0}>
-            <h1 className="text-5xl font-extrabold text-stone-900 text-center leading-tight tracking-tight">
+            <h1
+              className="text-5xl font-extrabold text-stone-900 text-center leading-tight tracking-tight"
+              style={heading ? toInlineStyle(heading.style) : undefined}
+            >
               <InlineText
                 value={(heading.content as TextContent).text}
                 onChange={(v) => handleChange(heading.id, v)}
@@ -55,7 +59,10 @@ export default function TitleSlide({
 
         {subheading && (
           <AnimatedElement element={subheading} animated={animated} index={1}>
-            <p className="text-xl text-stone-500 text-center font-normal max-w-lg">
+            <p
+              className="text-xl text-stone-500 text-center font-normal max-w-lg"
+              style={subheading ? toInlineStyle(subheading.style) : undefined}
+            >
               <InlineText
                 value={(subheading.content as TextContent).text}
                 onChange={(v) => handleChange(subheading.id, v)}

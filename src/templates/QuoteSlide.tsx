@@ -1,6 +1,7 @@
 import type { TemplateComponentProps } from './registry'
 import AnimatedElement from './AnimatedElement'
 import InlineText from '@/components/shared/InlineText'
+import { toInlineStyle } from '@/utils/elementStyle'
 import type { QuoteBlockContent } from '@/types'
 
 export default function QuoteSlide({
@@ -51,6 +52,7 @@ export default function QuoteSlide({
       <div className="relative z-10 flex flex-col items-center max-w-xl px-8">
         <AnimatedElement element={quoteElement!} animated={animated} index={0}>
           <blockquote
+            style={toInlineStyle(quoteElement?.style)}
             className={`
               ${
                 isBold

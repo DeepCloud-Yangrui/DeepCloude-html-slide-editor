@@ -3,6 +3,7 @@ import { Image as ImageIcon } from 'lucide-react'
 import type { TemplateComponentProps } from './registry'
 import AnimatedElement from './AnimatedElement'
 import InlineText from '@/components/shared/InlineText'
+import { toInlineStyle } from '@/utils/elementStyle'
 import { kenBurns } from '@/animations/variants'
 import type { TextContent, ImageContent } from '@/types'
 
@@ -50,7 +51,10 @@ export default function FullImageSlide({
       <div className="absolute inset-0 flex flex-col items-center justify-end pb-20 px-8">
         {heading && (
           <AnimatedElement element={heading} animated={animated} index={0}>
-            <h2 className="text-4xl font-extrabold text-white text-center leading-tight mb-3 drop-shadow-lg">
+            <h2
+              className="text-4xl font-extrabold text-white text-center leading-tight mb-3 drop-shadow-lg"
+              style={heading ? toInlineStyle(heading.style) : undefined}
+            >
               <InlineText
                 value={(heading.content as TextContent).text}
                 onChange={(v) => handleChange(heading.id, v)}
@@ -62,7 +66,10 @@ export default function FullImageSlide({
         )}
         {subheading && (
           <AnimatedElement element={subheading} animated={animated} index={1}>
-            <p className="text-lg text-stone-200 text-center max-w-lg drop-shadow">
+            <p
+              className="text-lg text-stone-200 text-center max-w-lg drop-shadow"
+              style={subheading ? toInlineStyle(subheading.style) : undefined}
+            >
               <InlineText
                 value={(subheading.content as TextContent).text}
                 onChange={(v) => handleChange(subheading.id, v)}

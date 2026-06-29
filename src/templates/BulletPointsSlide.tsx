@@ -1,6 +1,7 @@
 import type { TemplateComponentProps } from './registry'
 import AnimatedElement from './AnimatedElement'
 import InlineText from '@/components/shared/InlineText'
+import { toInlineStyle } from '@/utils/elementStyle'
 import type { TextContent, IconBulletContent } from '@/types'
 import * as LucideIcons from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -33,7 +34,10 @@ export default function BulletPointsSlide({
 
       {heading && (
         <AnimatedElement element={heading} animated={animated} index={0}>
-          <h2 className="text-3xl font-bold text-stone-900 mb-10">
+          <h2
+            className="text-3xl font-bold text-stone-900 mb-10"
+            style={heading ? toInlineStyle(heading.style) : undefined}
+          >
             <InlineText
               value={(heading.content as TextContent).text}
               onChange={(v) => handleChange(heading.id, 'text', v)}
@@ -50,7 +54,10 @@ export default function BulletPointsSlide({
           const Icon = getIcon(content.icon)
           return (
             <AnimatedElement key={bullet.id} element={bullet} animated={animated} index={i + 1}>
-              <div className="flex items-start gap-4 group cursor-default">
+              <div
+                className="flex items-start gap-4 group cursor-default"
+                style={toInlineStyle(bullet.style)}
+              >
                 <div className="w-10 h-10 rounded-xl bg-brand-light flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-brand-subtle transition-colors">
                   <Icon size={20} className="text-brand" />
                 </div>

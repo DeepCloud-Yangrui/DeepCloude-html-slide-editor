@@ -1,6 +1,7 @@
 import type { TemplateComponentProps } from './registry'
 import AnimatedElement from './AnimatedElement'
 import InlineText from '@/components/shared/InlineText'
+import { toInlineStyle } from '@/utils/elementStyle'
 import type {
   TextContent,
   CalloutContent,
@@ -72,7 +73,10 @@ export default function ContentSlide({
             if (content.variant === 'heading') {
               return (
                 <AnimatedElement key={element.id} element={element} animated={animated} index={i}>
-                  <h2 className="text-3xl font-bold text-stone-900 mb-6">
+                  <h2
+                    className="text-3xl font-bold text-stone-900 mb-6"
+                    style={toInlineStyle(element.style)}
+                  >
                     <InlineText
                       value={content.text}
                       onChange={(v) => handleChange(element.id, 'text', v)}
@@ -135,6 +139,7 @@ export default function ContentSlide({
               <AnimatedElement key={element.id} element={element} animated={animated} index={i}>
                 <div
                   className={`${style.bg} ${style.text} border-l-4 ${style.border} rounded-lg px-4 py-3 mb-4`}
+                  style={toInlineStyle(element.style)}
                 >
                   <strong className="block text-sm mb-1">
                     <InlineText

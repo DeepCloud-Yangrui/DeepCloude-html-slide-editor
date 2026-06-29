@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import type { TemplateComponentProps } from './registry'
 import AnimatedElement from './AnimatedElement'
 import InlineText from '@/components/shared/InlineText'
+import { toInlineStyle } from '@/utils/elementStyle'
 import type { TextContent, TimelineNodeContent } from '@/types'
 import * as LucideIcons from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -32,7 +33,10 @@ export default function TimelineSlide({
     >
       {heading && (
         <AnimatedElement element={heading} animated={animated} index={0}>
-          <h2 className="text-3xl font-bold text-stone-900 mb-10">
+          <h2
+            className="text-3xl font-bold text-stone-900 mb-10"
+            style={heading ? toInlineStyle(heading.style) : undefined}
+          >
             <InlineText
               value={(heading.content as TextContent).text}
               onChange={(v) => handleChange(heading.id, 'text', v)}

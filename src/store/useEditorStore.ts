@@ -4,9 +4,10 @@ import type { Slide, SlideElement, PresentationSettings } from '@/types'
 import { generateId } from '@/utils/id'
 import { getTemplateById } from '@/data/templates'
 import { getElementPreset } from '@/data/animationPresets'
+import { normalizeElementStyle } from '@/utils/elementStyle'
 
-// Debounce timer for updateElementContent undo snapshots
-let _contentDebounceTimer: ReturnType<typeof setTimeout> | null = null
+// Debounce timer for text content and style undo snapshots
+let _undoDebounceTimer: ReturnType<typeof setTimeout> | null = null
 
 function createDefaultElement(type: string, overrides: Partial<SlideElement> = {}): SlideElement {
   const preset = getElementPreset('gentle', type)
@@ -725,7 +726,39 @@ export const useEditorStore = create<EditorState>()(
         })
       },
 
-      updateElement: (slideId, elementId, updates) =>
+      updateElement: (slideId, elementId, updates) => {
+        // 1. Verify slide exists
+        const slide = get().slides.find((s) => s.id === slideId)
+        if (!slide) return
+
+        // 2. Verify element exists
+        const element = slide.elements.find((e) => e.id === elementId)
+        if (!element) return
+
+        // 3. Verify updates is not empty
+        if (Object.keys(updates).length === 0) return
+
+        // 4. If updating style, normalize and compare
+        if ('style' in updates) {
+          const normalized = normalizeElementStyle(updates.style)
+          if (JSON.stringify(normalized) === JSON.stringify(normalizeElementStyle(element.style))) {
+            return // same style, no undo pollution
+          }
+          updates = { ...updates, style: normalized }
+        }
+
+        // 5. style-only updates use 500ms debounce
+        if ('style' in updates && Object.keys(updates).length === 1) {
+          if (!get()._pendingUndoSnapshot) {
+            set({ _pendingUndoSnapshot: JSON.parse(JSON.stringify(get().slides)) })
+          }
+          if (_undoDebounceTimer) clearTimeout(_undoDebounceTimer)
+          _undoDebounceTimer = setTimeout(() => get()._flushPendingUndo(), 500)
+        } else {
+          get()._pushUndo()
+        }
+
+        // 6. Execute update
         set({
           slides: get().slides.map((s) =>
             s.id === slideId
@@ -735,7 +768,8 @@ export const useEditorStore = create<EditorState>()(
                 }
               : s,
           ),
-        }),
+        })
+      },
 
       updateElementContent: (slideId, elementId, contentUpdates) => {
         // Debounced undo: save snapshot once, then debounce subsequent calls
@@ -743,8 +777,8 @@ export const useEditorStore = create<EditorState>()(
           set({ _pendingUndoSnapshot: JSON.parse(JSON.stringify(get().slides)) })
         }
         // Clear existing timer, set new 500ms timer to flush
-        if (_contentDebounceTimer) clearTimeout(_contentDebounceTimer)
-        _contentDebounceTimer = setTimeout(() => {
+        if (_undoDebounceTimer) clearTimeout(_undoDebounceTimer)
+        _undoDebounceTimer = setTimeout(() => {
           get()._flushPendingUndo()
         }, 500)
 

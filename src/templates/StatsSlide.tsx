@@ -1,6 +1,7 @@
 import type { TemplateComponentProps } from './registry'
 import AnimatedElement from './AnimatedElement'
 import InlineText from '@/components/shared/InlineText'
+import { toInlineStyle } from '@/utils/elementStyle'
 import type { TextContent, StatCardContent } from '@/types'
 import * as LucideIcons from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -31,7 +32,10 @@ export default function StatsSlide({
     >
       {heading && (
         <AnimatedElement element={heading} animated={animated} index={0}>
-          <h2 className="text-3xl font-bold text-stone-900 mb-10">
+          <h2
+            className="text-3xl font-bold text-stone-900 mb-10"
+            style={heading ? toInlineStyle(heading.style) : undefined}
+          >
             <InlineText
               value={(heading.content as TextContent).text}
               onChange={(v) => handleChange(heading.id, 'text', v)}
@@ -55,7 +59,10 @@ export default function StatsSlide({
 
           return (
             <AnimatedElement key={card.id} element={card} animated={animated} index={i + 1}>
-              <div className="bg-white rounded-2xl p-6 border border-stone-100 shadow-card hover:shadow-elevated transition-shadow duration-300">
+              <div
+                className="bg-white rounded-2xl p-6 border border-stone-100 shadow-card hover:shadow-elevated transition-shadow duration-300"
+                style={toInlineStyle(card.style)}
+              >
                 <div className="flex items-start justify-between mb-4">
                   <div
                     className="w-10 h-10 rounded-xl flex items-center justify-center"

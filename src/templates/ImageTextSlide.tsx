@@ -2,6 +2,7 @@ import { Image as ImageIcon } from 'lucide-react'
 import type { TemplateComponentProps } from './registry'
 import AnimatedElement from './AnimatedElement'
 import InlineText from '@/components/shared/InlineText'
+import { toInlineStyle } from '@/utils/elementStyle'
 import type { TextContent, ImageContent } from '@/types'
 
 export default function ImageTextSlide({
@@ -29,7 +30,10 @@ export default function ImageTextSlide({
     <div className="flex-1 flex flex-col justify-center px-8">
       {heading && (
         <AnimatedElement element={heading} animated={animated} index={0}>
-          <h2 className="text-3xl font-bold text-stone-900 mb-4">
+          <h2
+            className="text-3xl font-bold text-stone-900 mb-4"
+            style={heading ? toInlineStyle(heading.style) : undefined}
+          >
             <InlineText
               value={(heading.content as TextContent).text}
               onChange={(v) => handleChange(heading.id, v)}
