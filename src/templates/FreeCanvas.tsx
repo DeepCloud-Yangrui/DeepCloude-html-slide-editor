@@ -51,6 +51,7 @@ export default function FreeCanvas({
 
   const handlePointerDown = useCallback(
     (e: React.PointerEvent, elementId: string, layout: ElementLayout) => {
+      if (mode !== 'editor') return
       if (e.button !== 0) return
       e.stopPropagation()
       const el = e.currentTarget as HTMLElement
@@ -63,6 +64,7 @@ export default function FreeCanvas({
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent) => {
+      if (mode !== 'editor') return
       if (!dragging) return
       if (!canvasRef.current) return
       const rect = canvasRef.current.getBoundingClientRect()
