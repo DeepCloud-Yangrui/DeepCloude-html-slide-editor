@@ -1,8 +1,8 @@
 # HTML Slide Editor — 项目当前状态报告
 
 > 生成日期：2026-06-29  
-> 当前阶段：P1 完成  
-> 建议版本标记：v0.6.0  
+> 当前阶段：P2 完成（元素样式编辑基础版）  
+> 建议版本标记：v0.7.0  
 > 仓库：`https://github.com/DeepCloud-Yangrui/DeepCloude-html-slide-editor`
 
 ---
@@ -39,6 +39,29 @@
 - ✅ 404 页面（`src/pages/NotFoundPage.tsx`，带返回首页和继续编辑按钮）
 - ✅ React Error Boundary（`src/components/shared/ErrorBoundary.tsx`，class component，渲染错误时显示恢复 UI）
 - ✅ lint warning 从 42 降到 25（清理 17 个低风险 warning，保留 25 个合理的 `no-explicit-any`）
+- ✅ 不破坏现有 10 种模板和演示模式
+
+### P2（元素样式编辑基础版）
+- ✅ 新增 `ElementStyle` 类型（`src/types/style.ts`），`SlideElement.style` 从 `Record<string, string>` 收敛为 `ElementStyle`
+- ✅ 新增样式安全 helper（`src/utils/elementStyle.ts`）：
+  - `normalizeElementStyle()` — 白名单 + 逐字段校验，丢弃未知 key 和非法 value
+  - `toInlineStyle()` — token 映射为 CSS 值，React 模板渲染用
+  - `toInlineStyleString()` — HTML 导出用，逐字段硬编码输出，不遍历 `Object.entries`
+- ✅ style 字段只允许安全 token / 安全颜色：
+  - fontSize：sm / md / lg / xl / 2xl / 3xl / 4xl / 5xl
+  - fontWeight：normal / medium / semibold / bold / extrabold
+  - color / backgroundColor：#RGB 或 #RRGGBB
+  - textAlign：left / center / right / justify
+  - padding：none / sm / md / lg
+  - borderRadius：none / sm / md / lg / full
+- ✅ PropertiesPanel 增加元素样式编辑 UI（`StyleEditor` 子组件），支持字号、字重、文字颜色、文本对齐、背景色、内边距、圆角
+- ✅ "重置样式"按钮（将 style 重置为 `{}`）
+- ✅ `updateElement` 正式接入 undo/redo，style-only 更新使用 500ms debounce（避免颜色选择器产生大量 undo 历史）
+- ✅ `_contentDebounceTimer` 重命名为 `_undoDebounceTimer`（统一服务文本编辑和样式编辑）
+- ✅ JSON 导入时 `normalizeElementStyle(el.style)`，丢弃未知 key 和非法 value
+- ✅ 9 个可视模板读取 `element.style`（html 模板不参与）
+- ✅ HTML 导出支持 `element.style` 内联样式（复用 `toInlineStyleString()`，不使用 `Object.entries` 全量输出）
+- ✅ iframe sandbox="" 安全逻辑保持不变，无 allow-scripts
 - ✅ 不破坏现有 10 种模板和演示模式
 
 ---
@@ -83,7 +106,7 @@
 
 ```
 src/
-├── types/          # 4 个文件：slide, template, animation, presentation
+├── types/          # 5 个文件：slide, template, animation, presentation, style（P2 新增）
 ├── data/           # 2 个文件：templates（10 种）、animationPresets（5 个）
 ├── store/          # 2 个文件：useEditorStore（持久化 + partialize）、usePresentationStore
 ├── hooks/          # 4 个文件：useKeyboard, useAutoPlay, useFullscreen, useSlideNavigation
@@ -94,10 +117,10 @@ src/
 │   ├── presentation/  # 6 个文件：PresentationLayout, PresentationView, AnimatedSlide, NavigationControls, ProgressBar, NarrationPanel
 │   └── shared/     # 6 个文件：Button, IconButton, Modal, Tooltip, InlineText, ErrorBoundary（P1 新增）
 ├── pages/          # 4 个文件：HomePage, EditorPage, PresentationPage, NotFoundPage（P1 新增）
-└── utils/          # 6 个文件：id, storage, htmlImporter, exportJson, importJson, exportHtml
+└── utils/          # 7 个文件：id, storage, htmlImporter, exportJson, importJson, exportHtml, elementStyle（P2 新增）
 ```
 
-共 63 个源文件。
+共 65 个源文件。
 
 ---
 
@@ -205,6 +228,8 @@ Framer Motion v11，两层架构：
 - ✅ 所有用户文本 `escapeHtml()` 转义
 - ✅ HTML 模板（templateId='html'）用 `<iframe sandbox="" srcdoc="...">` 包裹，禁止脚本执行
 - ✅ 无 HTML 内容的 html 模板 fallback 为静态占位提示
+- ✅ P2 新增：`element.style` 内联样式输出（复用 `toInlineStyleString()`，不支持未知 key）
+- ✅ P2 新增：stat-card 类型导出支持
 
 ### 明确限制
 - ❌ 不保留 Framer Motion 动画（静态渲染）
@@ -234,6 +259,8 @@ Framer Motion v11，两层架构：
 - 纳入 undo 的操作：
   - 结构性编辑：addSlide、deleteSlide、duplicateSlide、moveSlide、changeSlideTemplate、updateSlideField（非 content 字段）、addElement、deleteElement
   - 文本内容编辑：updateElementContent（500ms 防抖合并快照）
+  - 样式编辑：updateElement（style-only 更新使用 500ms debounce，P2 新增）
+- `_undoDebounceTimer` 统一服务文本编辑和样式编辑（P2 重命名）
 - 最大历史步数：50
 - 无效操作不污染 undo stack：各 action 先验证操作有效性再 push 快照
 - 刷新页面后 undo/redo 栈清空（不持久化）
@@ -286,8 +313,8 @@ P2 阶段计划逐步收紧。
 
 以下全部为 **未实现**：
 
-- ❌ 元素样式编辑（字体、颜色、大小、对齐选择器）
-- ❌ 元素拖拽移动/缩放（自由画布）
+- ❌ 自由拖拽 / 缩放（自由画布）
+- ❌ 图层面板
 - ❌ PDF 导出
 - ❌ PPTX 导出
 - ❌ 图片导出
@@ -308,38 +335,31 @@ P2 阶段计划逐步收紧。
 
 ---
 
-## 17. 当前最近 10 个 commit
+## 17. 当前最近 commit（P2 相关）
 
 ```
-6a8da25 补齐撤销重做的最后边界检查
-d4d6717 修正撤销重做的边界问题，避免持久化历史栈
-6160303 P1 编辑器安全感增强：删除确认、导入前备份、404 页面、Error Boundary、lint 清理 42→25
-961290c 实现撤销和重做，支持 8 种编辑操作的 undo/redo
-83fda1f 更新 P0.5 完成后的项目状态报告
-3c6635b 修好 P0.5 的导入校验和 HTML 导出安全细节
-cedd543 补齐 typecheck/lint/format 工程规范命令，配置 ESLint 和 Prettier，修复 iframe 安全沙箱
-3902c12 增加 JSON 导出导入功能：导出完整项目为 .json，从 .json 导入含 schema 校验
-ea5b7f3 迁移 localStorage key 到 html-slide-editor-state，兼容旧数据；首页增加继续编辑入口和 JSON 导入按钮
-8c90468 收敛类型模型：修正 Presentation.slides any[] 类型为 Slide[]，新增 schemaVersion 字段
+58bc6fd HTML 导出支持 element.style 内联样式
+e949f96 补齐可视模板中遗漏的 element.style 渲染点
+faff511 所有可视模板支持 element.style 渲染，样式变更接入 undo
+cdec80e 修复 P2 样式相关文件的格式问题
+b3d4182 补齐样式面板的 4xl 和 5xl 字号选项
+ad6d899 PropertiesPanel 增加元素样式编辑 UI
+e7f0162 修正样式 helper 的颜色校验和防御式规范化
+3841faa 定义 ElementStyle 类型和样式安全 helper
 ```
 
 ---
 
-## 18. 下一阶段建议（P2 候选）
+## 18. 下一阶段建议（P3 候选）
 
-**P2 建议优先做"元素样式编辑基础版"**，不要直接跳 PDF/PPTX 或 AI：
+**P3 建议做"自由画布与元素布局基础版"**，不要直接跳 PDF/PPTX 或 AI：
 
-1. **元素样式编辑** — PropertiesPanel 增加基础样式控件：
-   - 字体大小（sm/md/lg/xl/2xl 下拉选择）
-   - 字重（normal/medium/semibold/bold）
-   - 文字颜色（color picker）
-   - 文本对齐（left/center/right 按钮组）
-   - 卡片背景色（color picker）
-   - 简单间距（padding 调节）
-   - 先不做自由拖拽
+1. **自由画布编辑器** — 元素位置 x/y、宽高、拖拽移动、缩放、基础图层顺序、selected element 边框与控制点
 2. **HTML 消毒** — 引入 DOMPurify，在 HTML 导入时对内容消毒
 3. **多项目管理** — 首页支持多个项目的列表、重命名、删除
 4. **演示者视图** — 双屏支持：一台显示幻灯片、一台显示演讲备注和计时器
 5. **PDF 导出** — 引入 html2canvas + jspdf 或类似方案
 6. **收紧 lint** — 逐步清理 `no-explicit-any`，最终启用 `--max-warnings 0`
 7. **引入 Vitest** — 建立测试基础设施，为核心 store 和工具函数编写测试
+
+P3 暂时不包含：PDF/PPTX、AI、多人协作、复杂主题系统。
