@@ -1,92 +1,35 @@
-# 口播视频演示编辑器 — 项目当前状态报告
+# HTML Slide Editor — 项目当前状态报告
 
 > 生成日期：2026-06-29  
-> 初版提交：`1f862fe init: 搭建学术幻灯片编辑器基础架构`  
-> 仓库：`https://github.com/YangRUi0914/DeepCloude-html-slide-editor`
+> 当前阶段：P0.5 完成  
+> 仓库：`https://github.com/DeepCloud-Yangrui/DeepCloude-html-slide-editor`
 
 ---
 
-## 1. 项目一句话定位
+## 1. 当前项目定位
 
-**口播视频配套演示网站** — 一个 React SPA，用户可以按页选择模板、输入口播内容（旁白文本），然后通过 PPT 级别但更高级的 Framer Motion 动画全屏逐页展示。
+**HTML Slide Editor / HTML 幻灯片编辑器** — 一个用 HTML/CSS/React 动画承载的 Web 原生幻灯片编辑器。用户可以像编辑 PPT 一样编辑结构化幻灯片，底层数据是 JSON，支持导出为独立 HTML 文件和 JSON 文件。
 
----
-
-## 2. 当前已实现功能
-
-### 核心编辑能力
-- ✅ 创建新演示文稿（首页 → 编辑器 → 画布）
-- ✅ 添加 / 删除 / 复制幻灯片（`src/store/useEditorStore.ts` 的 5 个 slide CRUD action）
-- ✅ 拖拽排序幻灯片（`src/components/editor/SlideList.tsx`，使用 `@dnd-kit`）
-- ✅ 10 种模板可选（标题页、要点列表、图文混排、引用金句、数据仪表盘、时间线、对比页、全图页、HTML 幻灯片、通用内容页）
-- ✅ 模板切换：选中幻灯片 → 打开模板选择器 → 点击模板卡即可切换（`src/components/editor/TemplatePicker.tsx`）
-- ✅ 每页独立元素编辑（标题、正文、要点、数据卡片、时间节点、对比行、提示块、标签行、术语表、图片 URL）
-- ✅ **画布内联编辑**：在画布上直接点击文字即可编辑，按 Enter/blur 保存，Esc 取消（`src/components/shared/InlineText.tsx`）
-- ✅ 属性面板右键编辑（`src/components/editor/PropertiesPanel.tsx`）
-- ✅ 口播内容输入（textarea，每页独立）
-
-### 演示模式
-- ✅ 全屏演示（`src/components/presentation/PresentationLayout.tsx`，Fullscreen API）
-- ✅ 页面过渡动画：9 种（fade、slide-* 四个方向、zoom-in/out、flip-x/y、none）
-- ✅ 元素入场动画：9 种（fadeIn、fadeInUp/Down/Left/Right、scaleIn、scaleInBounce、blurIn、rotateIn）
-- ✅ 5 个动画预设组合（gentle / dramatic / stagger / smooth / reveal）
-- ✅ 方向感知过渡（前进/后退动画方向镜像，`src/animations/variants.ts` 的 `getSlideVariant`）
-- ✅ 键盘导航（← → ↑ ↓ Space Home End，`src/hooks/useKeyboard.ts`）
-- ✅ 点击屏幕左右区域翻页
-- ✅ 顶部进度条（`src/components/presentation/ProgressBar.tsx`，可点击跳转）
-- ✅ 幻灯片计数显示
-- ✅ 自动翻页（`src/hooks/useAutoPlay.ts`，可配置每页时间）
-- ✅ 演示中查看口播脚本面板（`src/components/presentation/NarrationPanel.tsx`）
-
-### 数据持久化
-- ✅ Zustand `persist` 中间件，自动存入 `localStorage`（key: `"narration-presentation-state"`）
-- ✅ 刷新页面恢复编辑状态
-
-### HTML 导入
-- ✅ 解析 HTML 文件，提取 `.slide` 或 `[data-i]` 元素（`src/utils/htmlImporter.ts`）
-- ✅ 保留原始 CSS
-- ✅ 导入后在编辑器中以 iframe 渲染（`src/templates/HTMLSlide.tsx`）
-- ✅ HTML 源码/CSS 在属性面板可编辑
+**已完成定位校正**：所有用户可见文案已从"口播视频演示"改为 HTML Slide Editor 方向。口播内容字段已重定位为"演讲备注 / Speaker Notes"。
 
 ---
 
-## 3. 当前没有实现但计划实现的功能
+## 2. 当前已完成的 P0.5 内容
 
-（以下全部为"未实现"）
-
-- ❌ 撤销/重做（Toolbar 有按钮但从未连接 store，EditorLayout 未传 props）
-- ❌ 导出为 PDF / PPTX / 图片
-- ❌ 导出为独立 HTML 文件
-- ❌ 导出为 JSON
-- ❌ 首页"最近项目"列表
-- ❌ 演示者视图（双屏：一屏演示、一屏看备注）
-- ❌ 幻灯片内元素拖拽移动/缩放
-- ❌ 元素样式编辑（字体、字号、颜色、对齐等）
-- ❌ 图片上传（仅有 URL 输入）
-- ❌ 视频/音频嵌入
-- ❌ 模板自定义（用户无法创建新模板）
-- ❌ 暗色模式
-- ❌ 移动端响应式布局
-- ❌ 多人协作
-- ❌ 国际化（所有字符串硬编码中文）
+- ✅ 项目定位文案校正（首页、编辑器、演示模式、`<title>`、CLAUDE.md、bat 启动脚本）
+- ✅ 类型模型收敛（`Presentation.slides: any[]` → `Slide[]`，`Slide.notes` 标记 deprecated）
+- ✅ localStorage key 迁移（`narration-presentation-state` → `html-slide-editor-state`，显式复制旧 key 数据，保留旧 key 不删除）
+- ✅ 首页"继续编辑"入口（读取 localStorage 显示项目标题和幻灯片数量）
+- ✅ JSON 导出（编辑器 Toolbar → 下载 `.json` 文件，包含 `schemaVersion: "0.5.0"`）
+- ✅ JSON 导入（首页 / 编辑器均支持，含 schema 校验、缺失字段默认值补齐、不认识的 element type 跳过不阻塞导入）
+- ✅ 独立 HTML 导出雏形（静态渲染全部模板、内嵌 CSS 和翻页 JS、演讲备注 N 键切换、html 模板用 iframe sandbox="" 安全包裹）
+- ✅ 工程规范命令（`typecheck` / `lint` / `format` / `build`）
+- ✅ iframe sandbox 收紧（编辑器内 HTMLSlide 移除 allow-scripts）
+- ✅ 不破坏现有 10 种模板和演示模式
 
 ---
 
-## 4. 当前页面路由
-
-| 路径 | 页面组件 | 用途 |
-|------|----------|------|
-| `/` | `src/pages/HomePage.tsx` | 首页：创建新文稿 / 导入 HTML |
-| `/editor/:id` | `src/pages/EditorPage.tsx` | 编辑器：三栏布局 |
-| `/present/:id` | `src/pages/PresentationPage.tsx` | 演示模式：全屏播放 |
-
-**路由配置**：`src/App.tsx`，使用 React Router v6 `Routes`/`Route`。
-
-**未实现**：404 页面、路由守卫、错误边界。
-
----
-
-## 5. 当前主要技术栈
+## 3. 当前技术栈
 
 | 分类 | 技术 | 版本 |
 |------|------|------|
@@ -100,229 +43,84 @@
 | 拖拽 | @dnd-kit/core + @dnd-kit/sortable | ^6.1.0 / ^8.0.0 |
 | 图标 | Lucide React | ^0.400.0 |
 | ID 生成 | nanoid | ^5.0.0 |
+| Lint | ESLint 8 + @typescript-eslint + react-hooks | ^8.57.0 |
+| Format | Prettier | ^3.2.0 |
 
-**未引入**：测试框架（Vitest/Jest）、Lint 工具（ESLint/Prettier）、HTML 消毒库（DOMPurify）、导出库。
-
----
-
-## 6. 当前目录结构
-
-```
-html-editor/
-├── index.html                          # 入口 HTML，引入 Google Fonts
-├── package.json                        # 依赖和脚本
-├── vite.config.ts                      # Vite 配置 + @/ 路径别名
-├── tailwind.config.ts                  # 设计令牌（颜色、阴影、字体）
-├── postcss.config.js                   # PostCSS 配置
-├── tsconfig.json                       # TypeScript 配置
-├── .gitignore                          # 排除 node_modules 和 dist
-├── CLAUDE.md                           # AI 开发指南
-├── 启动编辑器.bat                       # Windows 一键启动脚本
-│
-├── public/
-│   └── favicon.svg                     # 网站图标
-│
-└── src/
-    ├── main.tsx                        # React 入口
-    ├── App.tsx                         # 路由配置（3 条路由）
-    ├── index.css                       # Tailwind 指令 + 全局样式
-    ├── vite-env.d.ts
-    │
-    ├── types/                          # TypeScript 类型定义
-    │   ├── index.ts                    # 统一导出
-    │   ├── slide.ts                    # Slide / SlideElement / 12 种元素类型 / 过渡类型
-    │   ├── template.ts                 # Template 元数据接口
-    │   ├── presentation.ts             # Presentation / PresentationSettings
-    │   └── animation.ts                # ElementPreset / AnimationVariant
-    │
-    ├── data/                           # 静态数据 / 目录
-    │   ├── templates.ts                # 10 种模板定义
-    │   └── animationPresets.ts         # 5 个动画预设配置
-    │
-    ├── store/                          # Zustand 状态管理
-    │   ├── useEditorStore.ts           # 编辑器主 store（19 个 action，持久化）
-    │   └── usePresentationStore.ts     # 演示模式运行时 store（8 个 action，不持久化）
-    │
-    ├── hooks/                          # 自定义 hooks
-    │   ├── useKeyboard.ts              # 键盘快捷键
-    │   ├── useAutoPlay.ts              # 自动翻页定时器
-    │   ├── useFullscreen.ts            # Fullscreen API 封装
-    │   └── useSlideNavigation.ts       # 幻灯片导航边界检查
-    │
-    ├── animations/                     # 动画系统
-    │   ├── variants.ts                 # 10 种页面过渡 + 9 种元素入场 + Ken Burns + Stagger
-    │   └── transitions.ts              # 过渡配置（弹簧、缓动曲线）
-    │
-    ├── templates/                      # 模板组件
-    │   ├── registry.ts                 # 模板注册表（10 个模板 → 组件映射）
-    │   ├── TemplateRenderer.tsx        # 模板调度器（按 templateId 渲染对应组件）
-    │   ├── AnimatedElement.tsx         # 元素入场动画包装器
-    │   ├── TitleSlide.tsx              # 标题页
-    │   ├── BulletPointsSlide.tsx       # 要点列表
-    │   ├── ImageTextSlide.tsx          # 图文混排
-    │   ├── QuoteSlide.tsx              # 引用金句
-    │   ├── StatsSlide.tsx              # 数据仪表盘
-    │   ├── TimelineSlide.tsx           # 时间线
-    │   ├── ComparisonSlide.tsx         # 对比页
-    │   ├── FullImageSlide.tsx          # 全图页
-    │   ├── HTMLSlide.tsx               # HTML 导入幻灯片（iframe 渲染）
-    │   └── ContentSlide.tsx            # 通用内容页（callout/tag/gloss/footer-bar）
-    │
-    ├── components/
-    │   ├── editor/                     # 编辑器 UI 组件
-    │   │   ├── EditorLayout.tsx        # 三栏布局外壳
-    │   │   ├── Toolbar.tsx             # 顶部工具栏
-    │   │   ├── Sidebar.tsx             # 左侧边栏（包 SlideList）
-    │   │   ├── SlideList.tsx           # 幻灯片列表（拖拽排序）
-    │   │   ├── SlideThumbnail.tsx      # 幻灯片缩略图卡片
-    │   │   ├── Canvas.tsx              # 中央画布（16:9 预览）
-    │   │   ├── PropertiesPanel.tsx     # 右侧属性面板（slide/element 编辑）
-    │   │   ├── TemplatePicker.tsx      # 模板选择器弹窗
-    │   │   └── TemplateCard.tsx        # 模板卡片
-    │   │
-    │   ├── presentation/               # 演示模式 UI 组件
-    │   │   ├── PresentationLayout.tsx  # 全屏外壳
-    │   │   ├── PresentationView.tsx    # 演示播放引擎（AnimatePresence）
-    │   │   ├── AnimatedSlide.tsx       # 单张动画幻灯片
-    │   │   ├── NavigationControls.tsx  # 导航按钮 + 页码
-    │   │   ├── ProgressBar.tsx         # 顶部进度条
-    │   │   └── NarrationPanel.tsx      # 口播内容侧边面板
-    │   │
-    │   └── shared/                     # 共享 UI 组件
-    │       ├── Button.tsx              # 按钮（primary/secondary/ghost/danger）
-    │       ├── IconButton.tsx          # 图标按钮（含 tooltip）
-    │       ├── Modal.tsx               # 模态框（Framer Motion 动画）
-    │       ├── Tooltip.tsx             # 悬浮提示
-    │       └── InlineText.tsx          # 内联可编辑文本组件
-    │
-    ├── pages/                          # 页面级组件
-    │   ├── HomePage.tsx                # 首页
-    │   ├── EditorPage.tsx              # 编辑器页面
-    │   └── PresentationPage.tsx        # 演示页面
-    │
-    └── utils/                          # 工具函数
-        ├── id.ts                       # nanoid 封装
-        ├── storage.ts                  # localStorage 读写
-        └── htmlImporter.ts             # HTML 导入解析器
-```
-
-**说明**：项目没有 `src/app`、`src/lib`、`src/components` 以外的顶层目录。核心逻辑分布在 `store/`、`templates/`、`components/`、`types/`。
+**未引入**：测试框架（Vitest/Jest）、HTML 消毒库（DOMPurify）、PDF/PPTX 导出库。
 
 ---
 
-## 7. 当前核心数据模型
+## 4. 当前路由
 
-### Slide（幻灯片）— `src/types/slide.ts`
+三条路由（`src/App.tsx`）：
+
+| 路径 | 页面 | 用途 |
+|------|------|------|
+| `/` | `HomePage` | 首页：新建 / 继续编辑 / 导入 JSON / 导入 HTML |
+| `/editor/:id` | `EditorPage` | 三栏编辑器 |
+| `/present/:id` | `PresentationPage` | 全屏演示播放 |
+
+无 404 路由、无路由守卫、无错误边界。
+
+---
+
+## 5. 当前核心目录结构
+
 ```
+src/
+├── types/          # 4 个文件：slide, template, animation, presentation
+├── data/           # 2 个文件：templates（10 种）、animationPresets（5 个）
+├── store/          # 2 个文件：useEditorStore（持久化）、usePresentationStore
+├── hooks/          # 4 个文件：useKeyboard, useAutoPlay, useFullscreen, useSlideNavigation
+├── animations/     # 2 个文件：variants, transitions
+├── templates/      # 12 个文件：registry, TemplateRenderer, AnimatedElement, TitleSlide, BulletPointsSlide, ImageTextSlide, QuoteSlide, StatsSlide, TimelineSlide, ComparisonSlide, FullImageSlide, HTMLSlide, ContentSlide
+├── components/
+│   ├── editor/     # 9 个文件：EditorLayout, Toolbar, Sidebar, SlideList, SlideThumbnail, Canvas, PropertiesPanel, TemplatePicker, TemplateCard
+│   ├── presentation/  # 6 个文件：PresentationLayout, PresentationView, AnimatedSlide, NavigationControls, ProgressBar, NarrationPanel
+│   └── shared/     # 5 个文件：Button, IconButton, Modal, Tooltip, InlineText
+├── pages/          # 3 个文件：HomePage, EditorPage, PresentationPage
+└── utils/          # 6 个文件：id, storage, htmlImporter, exportJson, importJson, exportHtml
+```
+
+共 61 个源文件。
+
+---
+
+## 6. 当前数据模型
+
+### Slide（幻灯片）
+```typescript
 Slide {
-  id, templateId, title, subtitle, content, notes,
-  elements: SlideElement[],   // 核心结构化内容
+  id, templateId, title, subtitle,
+  content: string,            // 演讲备注 / Speaker Notes
+  notes?: string,             // @deprecated，已合并到 content
+  elements: SlideElement[],   // 结构化内容块
   order: number,
-  animationPreset: string,    // 引用 animationPresets 中的 preset ID
-  transitionType: TransitionType,  // 'fade' | 'slide-left' | ... | 'none'
-  backgroundColor: string,
-  backgroundImage: string | null,
-  duration: number,           // 自动翻页秒数，0=手动
-  htmlSource?: string,        // HTML 导入时保存的原始 HTML
+  animationPreset: string,    // gentle | dramatic | stagger | smooth | reveal
+  transitionType: TransitionType,  // fade | slide-* | zoom-* | flip-* | none
+  backgroundColor, backgroundImage,
+  duration: number,           // 0 = 手动翻页
+  htmlSource?: string,        // HTML 导入时的原始 HTML（仅 html 模板）
 }
 ```
 
-### SlideElement（元素）— `src/types/slide.ts`
-```
+### SlideElement（元素）
+```typescript
 SlideElement {
-  id: string,
-  type: SlideElementType,     // 12 种之一
-  content: SlideElementContent,  // 按 type 区分的联合类型
-  animation: ElementAnimationConfig,  // preset, delay, duration, easing, staggerChildren
-  style: Record<string, string>,
+  id, type, content, animation, style
 }
 ```
 
-### SlideElementType（12 种）— `src/types/slide.ts`
-```
-'text' | 'image' | 'stat-card' | 'timeline-node' | 'comparison-row'
-| 'quote-block' | 'icon-bullet' | 'html-content' | 'callout'
-| 'tag-row' | 'gloss' | 'footer-bar'
-```
+12 种元素类型：`text`, `image`, `stat-card`, `timeline-node`, `comparison-row`, `quote-block`, `icon-bullet`, `html-content`, `callout`, `tag-row`, `gloss`, `footer-bar`
 
-每种类型对应各自独立的 Content 接口（如 `TextContent`、`StatCardContent`、`CalloutContent` 等）。
-
-### Template（模板元数据）— `src/types/template.ts`
-```
-Template {
-  id, name, nameZh, description, descriptionZh,
-  category: 'opening' | 'content' | 'visual' | 'data' | 'comparison' | 'closing',
-  icon: string,               // Lucide 图标名
-  previewColors: string[],    // 预览卡片渐变色
-  defaultAnimationPreset: string,
-}
-```
-
-### Animation Preset — `src/types/animation.ts`
-```
-ElementPreset = 'fadeIn' | 'fadeInUp' | 'fadeInDown' | 'fadeInLeft' | 'fadeInRight'
-               | 'scaleIn' | 'scaleInBounce' | 'blurIn' | 'rotateIn'
-TransitionType = 'fade' | 'slide-left' | 'slide-right' | 'slide-up' | 'slide-down'
-               | 'zoom-in' | 'zoom-out' | 'flip-x' | 'flip-y' | 'none'
-```
-
-### Presentation（顶层文稿）— `src/types/presentation.ts`
-```
-Presentation {
-  id, title, description,
-  slides: any[],           // 类型较松散
-  settings: PresentationSettings,
-  createdAt, updatedAt,
-}
-```
+### schemaVersion
+仅在导出 JSON 的外层结构中：`{ "schemaVersion": "0.5.0", "project": {...} }`。不进入内部 store 类型。
 
 ---
 
-## 8. 当前编辑器页面长什么样
+## 7. 当前模板系统
 
-### 左侧有什么（`src/components/editor/Sidebar.tsx` + `SlideList.tsx`）
-- **幻灯片缩略图列表**：每张幻灯片显示为一个小卡片（16:9 比例，含微小模板预览和序号）
-- **拖拽排序**：缩略图可通过 `@dnd-kit` 拖拽重排
-- **悬停操作**：鼠标悬停显示复制/删除按钮，左上角出现拖拽手柄
-- **"添加幻灯片"按钮**：底部虚线边框按钮（固定创建 `bullets` 模板）
-- **当前选中态**：indigo 色 2px 环形高亮
-
-### 中间有什么（`src/components/editor/Canvas.tsx`）
-- **16:9 画布**：居中显示，最大宽度 960px，带 `slide-shadow` 阴影
-- **实时预览**：当前选中幻灯片通过 `TemplateRenderer` 渲染
-- **内联编辑**：点击文字元素直接在画布上编辑
-- **悬停效果**：鼠标悬停画布阴影加深
-
-### 右侧有什么（`src/components/editor/PropertiesPanel.tsx`）
-- **面板宽度**：288px（`w-72`），可折叠（顶部工具栏切换按钮）
-- **幻灯片属性**（未选中元素时）：模板切换按钮、过渡类型下拉框、动画预设选择、自动翻页时间、背景颜色、口播内容 textarea
-- **元素属性**（选中元素时）：元素类型标签 + 删除按钮，按元素类型显示对应字段编辑器（如文本→input、引用→多字段、HTML→代码编辑器等）
-
-### 支持切换 slide
-✅ 点击左侧缩略图切换、拖拽排序
-
-### 支持编辑内容
-✅ 画布内联编辑（`InlineText`）+ 属性面板编辑（`PropertiesPanel`）
-
-### 支持模板选择
-✅ 属性面板"更换模板"按钮 → `TemplatePicker` 弹窗（4 列网格）→ 点击卡片即时切换
-
-### 支持动画预览
-⚠️ 编辑器模式下不播放动画（`animated={false}`）。仅演示模式（全屏播放）才能看到动画效果。编辑器内无动画预览按钮。
-
----
-
-## 9. 当前模板系统是否存在
-
-**存在**。采用 **Registry 模式**。
-
-### 模板注册表：`src/templates/registry.ts`
-- 一个 `Record<string, ComponentType<TemplateComponentProps>>` 对象
-- 手动注册了 10 个模板 ID 到组件的映射
-- `getTemplateComponent(templateId)` 查找组件，未找到时回退到 `TitleSlide`
-- 添加新模板需要：创建组件 → 在 `registry.ts` 注册 → 在 `data/templates.ts` 添加元数据 → 在 `useEditorStore.ts` 添加默认元素
-
-### 10 个已注册模板
+Registry 模式（`src/templates/registry.ts`），10 个模板：
 
 | ID | 组件 | 中文名 |
 |----|------|--------|
@@ -337,211 +135,156 @@ Presentation {
 | `html` | HTMLSlide | HTML 幻灯片 |
 | `content` | ContentSlide | 通用内容页 |
 
-### 模板元数据：`src/data/templates.ts`
-- `TEMPLATES` 数组包含每个模板的名称、分类、图标、预览颜色、默认动画预设等信息
-- `getTemplateById(id)` 查找函数
-
-### 状态
-- ⚠️ 模板是写死在代码中的，用户无法通过 UI 创建或自定义模板
+添加新模板需四步：创建组件 → 注册 → 添加元数据 → 添加默认元素。用户无法通过 UI 创建模板。
 
 ---
 
-## 10. 当前动画系统是否存在
+## 8. 当前动画系统
 
-**存在**。
+Framer Motion v11，两层架构：
+- **页面过渡**：10 种 variant，`AnimatePresence mode="wait"`，方向感知（前进/后退镜像）
+- **元素入场**：9 种 variant，通过 `AnimatedElement` 包装器 + stagger 容器
+- **5 个动画预设**：gentle / dramatic / stagger / smooth / reveal
+- **特殊效果**：Ken Burns（缓慢缩放）、弹簧物理弹性
 
-### 动画库
-- **Framer Motion v11**（`framer-motion`）
-
-### 两层动画架构
-1. **页面过渡**（Slide Transition）：`src/animations/variants.ts` 的 `slideTransitions`
-   - 9 种过渡 + 1 个 "none"（共 10 个 variant 定义）
-   - `PresentationView.tsx` 使用 `AnimatePresence mode="wait"` 包裹 `AnimatedSlide`
-   - 方向感知：`getSlideVariant(type, direction)` 在后退时交换 enter/exit
-
-2. **元素入场**（Element Entrance）：`src/animations/variants.ts` 的 `elementEntrance`
-   - 9 种入场效果
-   - 通过 `AnimatedElement` 包装器应用
-   - 支持延迟、持续时间、缓动曲线配置
-   - `staggerContainer` 实现错位级联入场
-   - 特殊效果：`kenBurns`（缓慢缩放）、`typewriterChar`（字符逐字显现）
-
-### 动画预设：`src/data/animationPresets.ts`
-- 5 个预设组合：gentle / dramatic / stagger / smooth / reveal
-- 每个预设定义：页面过渡类型 + 按元素类型映射的入场动画 + 错位延迟
-
-### 过渡配置：`src/animations/transitions.ts`
-- `smoothSpring`、`gentleTween`、`bouncySpring`、`slowReveal`、`slideTransitionConfig`
+动画系统 P0.5 期间未做任何修改。
 
 ---
 
-## 11. 当前状态管理方式
+## 9. 当前 JSON 导入导出能力
 
-### 是否用了 Zustand
-✅ 是。两个独立 store：
+### JSON 导出（`src/utils/exportJson.ts`）
+- 入口：编辑器 Toolbar "导出 JSON" 按钮
+- 导出完整项目数据（title、settings、slides）为 `.json` 文件
+- 外层含 `schemaVersion: "0.5.0"` 和 `exportedAt`
+- 不导出 UI runtime 状态（currentSlideId、selectedElementId 等）
+- 文件命名：`{项目标题}_{YYYY-MM-DD}.json`
 
-1. **`useEditorStore`**（`src/store/useEditorStore.ts`）
-   - 使用 `zustand/middleware` 的 `persist` 中间件
-   - 19 个 action，管理所有幻灯片数据 + UI 状态
-   - 包含工厂函数：`createDefaultElement`、`createDefaultSlide`、`getDefaultElementsForTemplate`
-
-2. **`usePresentationStore`**（`src/store/usePresentationStore.ts`）
-   - 不使用 persist
-   - 8 个 action，管理演示播放时的索引、方向、播放状态
-   - 进入演示模式时从编辑器 store 复制 slides
-
-### 是否支持本地保存
-✅ 是。编辑器 store 自动持久化到 `localStorage`（key: `"narration-presentation-state"`）
-
-### 是否支持刷新恢复
-✅ 是。Zustand persist 中间件在 store 初始化时自动从 `localStorage` hydrate
-
-### 未实现
-- ❌ 多次撤销/重做历史栈（Toolbar 有按钮但 `EditorLayout` 没有传 `onUndo`/`onRedo` props）
+### JSON 导入（`src/utils/importJson.ts`）
+- 入口：首页"导入 JSON 项目"按钮 / 编辑器 Toolbar "打开 JSON" 按钮
+- 校验规则（宽松策略）：
+  - `schemaVersion` 必须为 `0.5.x`
+  - slides 数组允许为空
+  - elements 数组允许为空
+  - 不认识的 templateId → fallback 到 `'title'`
+  - 不认识的 element type → 跳过该 element（`console.warn`），不阻塞导入
+  - 缺失字段自动补默认值（duration→0, backgroundColor→#FAFAF9, transitionType→fade, animationPreset→gentle 等 8 个字段）
+  - 拒绝含 `__proto__` / `constructor` / `prototype` 的原型污染数据
+- 导入后生成新 presentationId，不覆盖当前项目
 
 ---
 
-## 12. 当前导出能力
+## 10. 当前独立 HTML 导出能力和限制
 
-| 导出格式 | 状态 |
-|----------|------|
-| 导出为 JSON | ❌ 未实现（但 `localStorage` 中有完整 JSON） |
-| 导出为 HTML | ❌ 未实现 |
-| 导出为 PDF | ❌ 未实现 |
-| 导出为 PPTX | ❌ 未实现 |
-| 导出为图片 | ❌ 未实现 |
-| HTML 导入 | ✅ 已实现（`src/utils/htmlImporter.ts`） |
+### 能力（`src/utils/exportHtml.ts`）
+- ✅ 导出为单一自包含 `.html` 文件，零外部依赖
+- ✅ 所有 10 种模板的静态渲染（从 elements 提取内容生成 HTML）
+- ✅ 内嵌 CSS（排版、颜色、间距、卡片、callout）
+- ✅ 内嵌 JS 翻页逻辑：`← →` 翻页、点击左右半屏翻页、`Home/End` 跳首尾、`F` 全屏、`N` 显示/隐藏演讲备注
+- ✅ 顶部进度条 + 页数指示器
+- ✅ 16:9 容器布局
+- ✅ 所有用户文本 `escapeHtml()` 转义
+- ✅ HTML 模板（templateId='html'）用 `<iframe sandbox="" srcdoc="...">` 包裹，禁止脚本执行
+- ✅ 无 HTML 内容的 html 模板 fallback 为静态占位提示
 
----
-
-## 13. 当前 UI 风格描述
-
-- **整体风格**：温暖浅色主题，类似 Notion/Linear 的现代简约风格
-- **背景色**：`#FAFAF9`（石色 50，暖白纸色）
-- **品牌色**：indigo `#6366F1`，hover 态 `#4F46E5`
-- **字体**：Inter（英文/数字）+ Noto Sans SC（中文），标题使用 extrabold 字重
-- **圆角**：`rounded-xl`（12px）为主
-- **阴影系统**：4 级阴影（slide / slide-hover / card / elevated）
-- **编辑器布局**：三栏（左 224px + 中 flex-1 + 右 288px），顶部 56px 工具栏
-- **玻璃态面板**：`glass-panel` 类（白色 80% 不透明 + backdrop-blur-xl）
-- **微观交互**：hover 时背景色/阴影过渡、active 时缩放 `scale-[0.98]`、按钮 200ms transition
-- **暗色模式**：❌ 未实现
+### 明确限制
+- ❌ 不保留 Framer Motion 动画（静态渲染）
+- ❌ 不保留页面过渡动画
+- ❌ 不保留元素入场动画
+- ❌ html 模板内的 CSS 可能不完全兼容（sandbox iframe 隔离）
+- ⚠️ 第一版追求"可独立打开、可翻页、布局不崩"，不追求完整视觉还原
 
 ---
 
-## 14. 当前已知问题和未完成点
+## 11. 当前 localStorage key 迁移情况
 
-### 功能缺失
-1. **撤销/重做未连接**：`Toolbar.tsx` 接收 `onUndo`/`onRedo`/`canUndo`/`canRedo` props，但 `EditorLayout` 未传递，按钮永久禁用
-2. **添加幻灯片固定 `bullets` 模板**：`SlideList.tsx` 的 `addSlide('bullets')` 硬编码，未让用户选择模板
-3. **未导入 HTML 消毒库**：导入的 HTML 通过 `dangerouslySetInnerHTML`/iframe `srcDoc` 直接渲染，存在 XSS 风险
-4. **无 PDF/HTML/JSON 导出**
-5. **首页无最近项目列表**：用户无法从首页继续之前的工作
-6. **无 404 页面**：未知路由不显示任何错误提示
-7. **无错误边界**
-8. **元素级别无样式编辑**：字体、颜色、大小、对齐等均不可调
-9. **元素不能拖拽移动/缩放**：编辑器中元素位置完全由模板决定
-10. **图片仅支持 URL**：无本地上传，无拖入图片
-11. **编辑器内无动画预览**：只有进入全屏演示才能看到动画
-12. **演示模式无退出按钮**：只能按 Esc
-13. **演示者视图未实现**：无双屏支持
-14. **无测试**：零测试文件，无测试框架依赖
-15. **无 Lint/Format**：无 ESLint/Prettier 配置
-16. **移动端未适配**：所有尺寸固定，移动端布局基本不可用
-
-### 代码质量
-- `PropertiesPanel.tsx` 的元素类型检测基于内容字段启发式（如 `content.variant !== undefined`），不够稳健
-- `ContentSlide.tsx` 中 `gloss.items` 和 `tag-row.tags` 编辑用 `JSON.stringify` 传值，较脆弱
-- `Presentation` 类型中 `slides: any[]` 应该有更具体的类型
+- **新 key**：`html-slide-editor-state`
+- **旧 key**：`narration-presentation-state`（保留不删除，作为备份）
+- **迁移方式**：`src/main.tsx` 中 React 渲染之前同步执行 `migrateStorageKey()`
+- **迁移逻辑**：如果新 key 无数据且旧 key 有数据 → 复制旧 key 完整内容到新 key
+- **失败处理**：try-catch 包裹，迁移失败 fallback 到空初始状态，不导致崩溃
+- **首页"继续编辑"**：读取新 key 数据，显示项目标题 + 幻灯片数量，点击进入编辑器
 
 ---
 
-## 15. 当前运行方式
+## 12. 当前工程命令
 
-```bash
-# 安装依赖
-npm install
-
-# 启动开发服务器（自动打开浏览器）
-npm run dev
-# 或双击 Windows 批处理文件
-启动编辑器.bat
-
-# 类型检查（不产出文件）
-npx tsc --noEmit
-
-# 生产构建
-npm run build
-
-# 预览生产构建
-npm run preview
-```
-
-**未实现的命令**：
-- ❌ `npm test` — 无测试脚本
-- ❌ `npm run lint` — 无 lint 脚本
+| 命令 | 用途 |
+|------|------|
+| `npm run dev` | 启动 Vite 开发服务器 |
+| `npm run build` | tsc 类型检查 + Vite 生产构建 |
+| `npm run preview` | 预览生产构建 |
+| `npm run typecheck` | 仅 TypeScript 类型检查 |
+| `npm run lint` | ESLint 检查（过渡期不强制零 warning） |
+| `npm run lint:fix` | ESLint 自动修复 |
+| `npm run format` | Prettier 格式检查 |
+| `npm run format:fix` | Prettier 自动格式化 |
 
 ---
 
-## 16. 最近一次构建结果
+## 13. 当前 lint warning 数量
 
-**`npm run build` 执行结果**（2026-06-29）：
+**0 errors, 42 warnings**（P0.5 过渡策略：不强制零 warning）
+
+主要 warning 来源：
+- `@typescript-eslint/no-explicit-any`（约 20 个，来自 useFullscreen、PropertiesPanel、模板组件、importJson 等）
+- 未使用变量（约 10 个，PropertiesPanel 中未使用的类型 import 等）
+- `react-hooks/exhaustive-deps`（约 3 个）
+- `@typescript-eslint/no-unused-vars`（约 9 个）
+
+P1 阶段计划逐步收紧。
+
+---
+
+## 14. 当前还没做的功能
+
+以下全部为 **未实现**：
+
+- ❌ 撤销/重做（Toolbar 有按钮但未连接 store）
+- ❌ 元素样式编辑（字体、颜色、大小、对齐选择器）
+- ❌ 元素拖拽移动/缩放（自由画布）
+- ❌ PDF 导出
+- ❌ PPTX 导出
+- ❌ 图片导出
+- ❌ 图片本地上传（仅 URL 输入）
+- ❌ 视频/音频嵌入
+- ❌ 多项目管理（当前单项目）
+- ❌ 演示者视图（双屏）
+- ❌ 编辑器内动画预览（仅全屏演示有动画）
+- ❌ 用户自定义模板
+- ❌ 暗色模式
+- ❌ 移动端响应式布局
+- ❌ AI 生成幻灯片
+- ❌ 多人协作
+- ❌ 404 页面 / 错误边界
+- ❌ 测试框架（零测试）
+- ❌ HTML 消毒（DOMPurify 未引入，但 iframe sandbox 已收紧）
+- ❌ 国际化（字符串硬编码中文）
+
+---
+
+## 15. 当前最近 6 个 commit
 
 ```
-✓ 1936 modules transformed.
-✓ built in 2.88s
-
-dist/index.html                 0.84 kB │ gzip: 0.47 kB
-dist/assets/index-DrR4y_aM.css 30.07 kB │ gzip: 5.82 kB
-dist/assets/index-vLtLF4ST.js 1140.96 kB │ gzip: 256.60 kB
-
-(!) Some chunks are larger than 500 kB after minification.
+3c6635b 修好 P0.5 的导入校验和 HTML 导出安全细节
+cedd543 补齐 typecheck/lint/format 工程规范命令，配置 ESLint 和 Prettier，修复 iframe 安全沙箱
+3902c12 增加 JSON 导出导入功能：导出完整项目为 .json，从 .json 导入含 schema 校验
+ea5b7f3 迁移 localStorage key 到 html-slide-editor-state，兼容旧数据；首页增加继续编辑入口和 JSON 导入按钮
+8c90468 收敛类型模型：修正 Presentation.slides any[] 类型为 Slide[]，新增 schemaVersion 字段
+b97cefe 校正项目定位：把所有用户可见文案从"口播视频演示"改为"HTML Slide Editor"
 ```
 
-- TypeScript 类型检查通过（`tsc --noEmit` 零错误）
-- JS bundle 较大（1.14 MB 未压缩 / 257 KB gzip），主要是 Framer Motion 和 Lucide React
-- 无 lint 结果（未配置）
-
 ---
 
-## 17. 最需要优先改进的 5 个问题（按优先级排序）
+## 16. 下一阶段建议（P1 候选）
 
-### 优先级 1：编辑器内元素内容编辑体验不足
-**问题**：虽然已有 `InlineText` 实现内联编辑，但所有样式（字体、颜色、大小、对齐）均不可调。用户无法改变标题字号、要点颜色，或调整文本对齐。属性面板仅提供原始字段值编辑，无任何视觉样式控件。  
-**影响**：用户导入现有 HTML slide 后，无法在编辑器内可视化地调整样式。  
-**建议**：`PropertiesPanel` 中为 `text` 元素增加字号、字重、颜色、对齐等选择器。
+按优先级排序：
 
-### 优先级 2：撤销/重做功能缺失
-**问题**：`Toolbar` 的撤销/重做按钮已渲染但从未连接。`EditorLayout` 未向 `Toolbar` 传递 `onUndo`/`onRedo` props，store 中也没有历史栈。一次误操作（如误删幻灯片、误改模板）无法恢复。  
-**影响**：编辑器缺乏基本的编辑安全感。  
-**建议**：在 `useEditorStore` 中实现命令历史栈（past/future 数组），或使用 `zustand/middleware` 的 `temporal` 中间件。`EditorLayout` 传递 `onUndo`/`onRedo` 给 `Toolbar`。
-
-### 优先级 3：导出功能完全缺失
-**问题**：用户花了时间编辑的幻灯片无法导出为任何格式。当前幻灯片数据仅存在于 `localStorage` 中。  
-**影响**：编辑器成了"数据孤岛"——内容进得来（HTML 导入），出不去。  
-**建议**：优先实现 JSON 导出（数据已在 store 中，只需 `JSON.stringify` + download），然后是独立 HTML 导出（将 slides 拼接为一个带翻页 JS 的 HTML 文件）。
-
-### 优先级 4：HTML 导入缺少安全处理
-**问题**：导入的 HTML 直接注入 iframe（`srcDoc`），未经过任何消毒处理（无 DOMPurify 等库）。`src/utils/htmlImporter.ts` 不做任何内容过滤。  
-**影响**：导入恶意 HTML 文件可能导致 XSS 攻击。  
-**建议**：引入 `DOMPurify` 对导入的 HTML 进行消毒后再渲染。
-
-### 优先级 5：首页缺少"继续编辑"入口
-**问题**：用户刷新页面或重新打开浏览器后，`localStorage` 中的数据还在，但首页没有任何入口可以回到之前的项目。用户必须记住 URL 或通过浏览器历史记录回去。  
-**影响**：用户可能以为数据丢失了。  
-**建议**：首页从 `localStorage` 读取所有已保存的 presentation，显示为列表，点击即可继续编辑。
-
----
-
-## 附录：文件统计
-
-- 源文件总数：53 个 TypeScript/TSX 文件（不含 node_modules、dist）
-- 模板组件：12 个（10 个模板 + 1 个 AnimatedElement + 1 个 TemplateRenderer）
-- 编辑器组件：9 个
-- 演示组件：6 个
-- 共享组件：5 个
-- Store：2 个
-- Hooks：4 个
-- Types：4 个
-- Data：2 个
-- Utils：3 个
+1. **撤销/重做** — 在 `useEditorStore` 中实现命令历史栈，连接 Toolbar 按钮。这是编辑器基本体验的缺失。
+2. **元素样式编辑** — PropertiesPanel 增加字体、颜色、字号、对齐选择器，让用户可调整元素视觉样式。
+3. **HTML 消毒** — 引入 DOMPurify，在 HTML 导入时对内容消毒。当前 iframe sandbox 收紧已降低风险，但不是根治。
+4. **演示者视图** — 双屏支持：一台显示幻灯片、一台显示演讲备注和计时器。
+5. **多项目管理** — 首页支持多个项目的列表、重命名、删除。
+6. **PDF 导出** — 引入 html2canvas + jspdf 或类似方案。
+7. **收紧 lint** — 在 P1 末尾启用 `--max-warnings 0`。
+8. **引入 Vitest** — 建立测试基础设施，为核心 store 和工具函数编写测试。
