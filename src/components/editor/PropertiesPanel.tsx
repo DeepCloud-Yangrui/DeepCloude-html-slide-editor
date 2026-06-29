@@ -378,6 +378,8 @@ const FONT_SIZE_OPTIONS = [
   { value: 'xl', label: 'xl (22px)' },
   { value: '2xl', label: '2xl (28px)' },
   { value: '3xl', label: '3xl (36px)' },
+  { value: '4xl', label: '4xl (44px)' },
+  { value: '5xl', label: '5xl (56px)' },
 ]
 
 const FONT_WEIGHT_OPTIONS = [
@@ -428,7 +430,7 @@ function StyleEditor({
       if (v === '' || v === undefined) {
         delete newStyle[k as keyof typeof newStyle]
       } else {
-        ;(newStyle as Record<string, string>)[k] = v
+        (newStyle as Record<string, string>)[k] = v
       }
     }
     updateElement(currentSlideId, element.id, { style: newStyle })
