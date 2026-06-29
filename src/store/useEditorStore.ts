@@ -170,6 +170,7 @@ interface EditorState {
   // Data
   presentationId: string
   title: string
+  schemaVersion: string
   slides: Slide[]
   settings: PresentationSettings
 
@@ -217,6 +218,7 @@ export const useEditorStore = create<EditorState>()(
       // Initial data
       presentationId: '',
       title: '未命名幻灯片',
+      schemaVersion: '0.5.0',
       slides: [createDefaultSlide(0, 'title')],
       settings: {
         autoPlay: false,

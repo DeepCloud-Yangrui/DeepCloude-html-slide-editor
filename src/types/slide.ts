@@ -149,8 +149,9 @@ export interface Slide {
   templateId: string
   title: string
   subtitle: string
-  content: string
-  notes: string
+  content: string // speaker notes / 演讲备注
+  /** @deprecated merged into `content`, kept for backward compatibility */
+  notes?: string
   elements: SlideElement[]
   order: number
   animationPreset: string

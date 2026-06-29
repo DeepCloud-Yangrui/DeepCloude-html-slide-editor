@@ -1,4 +1,4 @@
-import type { TransitionType } from './slide'
+import type { TransitionType, Slide } from './slide'
 
 export interface PresentationSettings {
   autoPlay: boolean
@@ -13,7 +13,8 @@ export interface Presentation {
   id: string
   title: string
   description: string
-  slides: any[]
+  schemaVersion: string
+  slides: Slide[]
   settings: PresentationSettings
   createdAt: string
   updatedAt: string
