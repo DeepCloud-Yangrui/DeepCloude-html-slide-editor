@@ -42,6 +42,13 @@ function buildBasicHTML(title: string, slides: Slide[]): string {
     ${slide.elements
       .map((el: any) => {
         const c = el.content
+        // HTML content: render in sandboxed iframe, no allow-scripts
+        if (el.type === 'html-content' && c.html) {
+          return `<iframe sandbox="" srcdoc="${escapeHtml(c.html)}" style="width:100%;height:100%;border:none;border-radius:4px;"></iframe>`
+        }
+        if (el.type === 'html-content' && !c.html) {
+          return `<div class="element" style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;">HTML 幻灯片（静态快照）</div>`
+        }
         if (c.text)
           return `<div class="text-block"><${c.variant === 'heading' ? 'h2' : 'p'}>${escapeHtml(c.text)}</${c.variant === 'heading' ? 'h2' : 'p'}></div>`
         if (c.title && c.description)

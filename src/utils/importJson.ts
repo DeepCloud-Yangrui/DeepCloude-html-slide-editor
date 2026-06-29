@@ -73,7 +73,8 @@ export function validateAndParseProject(raw: unknown): ValidationResult | Valida
     return { ok: false, error: 'slides 字段必须是数组' }
   }
   if (project.slides.length === 0) {
-    return { ok: false, error: 'slides 数组不能为空' }
+    // Allow empty — user can add slides later
+    console.warn('Imported project has no slides')
   }
 
   // 7. Validate each slide
@@ -95,32 +96,43 @@ export function validateAndParseProject(raw: unknown): ValidationResult | Valida
     if (!Array.isArray(slide.elements)) {
       return { ok: false, error: `第 ${i + 1} 张幻灯片缺少 elements 数组` }
     }
-    if (slide.elements.length === 0) {
-      return { ok: false, error: `第 ${i + 1} 张幻灯片的 elements 数组不能为空` }
-    }
+    // Allow empty elements — user can add elements later
 
-    // 8. Validate each element
+    // 8. Validate each element; skip unknown types instead of failing
+    const validElements: any[] = []
     for (let j = 0; j < slide.elements.length; j++) {
       const el = slide.elements[j]
       if (!el || typeof el !== 'object') {
-        return { ok: false, error: `第 ${i + 1} 张幻灯片第 ${j + 1} 个元素格式不正确` }
+        console.warn(`Skipping invalid element at slide ${i + 1}, position ${j + 1}`)
+        continue
       }
-      if (typeof el.id !== 'string') {
-        return { ok: false, error: `第 ${i + 1} 张幻灯片第 ${j + 1} 个元素缺少 id` }
-      }
-      if (typeof el.type !== 'string') {
-        return { ok: false, error: `第 ${i + 1} 张幻灯片第 ${j + 1} 个元素缺少 type` }
+      if (typeof el.id !== 'string' || typeof el.type !== 'string') {
+        console.warn(`Skipping element without id/type at slide ${i + 1}, position ${j + 1}`)
+        continue
       }
       if (!KNOWN_ELEMENT_TYPES.includes(el.type)) {
-        return {
-          ok: false,
-          error: `第 ${i + 1} 张幻灯片第 ${j + 1} 个元素 type "${el.type}" 不在已知类型列表中`,
-        }
+        console.warn(
+          `Skipping unknown element type "${el.type}" at slide ${i + 1}, position ${j + 1}`,
+        )
+        continue
       }
       if (!el.content || typeof el.content !== 'object') {
-        return { ok: false, error: `第 ${i + 1} 张幻灯片第 ${j + 1} 个元素缺少 content` }
+        el.content = {}
       }
+      validElements.push(el)
     }
+    slide.elements = validElements
+
+    // 9. Fill missing slide fields with defaults
+    if (typeof slide.duration !== 'number') slide.duration = 0
+    if (typeof slide.backgroundColor !== 'string') slide.backgroundColor = '#FAFAF9'
+    if (!slide.backgroundImage && slide.backgroundImage !== null) slide.backgroundImage = null
+    if (typeof slide.transitionType !== 'string') slide.transitionType = 'fade'
+    if (typeof slide.animationPreset !== 'string') slide.animationPreset = 'gentle'
+    if (typeof slide.title !== 'string') slide.title = ''
+    if (typeof slide.subtitle !== 'string') slide.subtitle = ''
+    if (typeof slide.content !== 'string') slide.content = ''
+    if (typeof slide.order !== 'number') slide.order = i
   }
 
   return { ok: true, data: root as ValidationResult['data'] }
