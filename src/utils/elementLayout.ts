@@ -53,3 +53,23 @@ export function toLayoutStyle(layout: ElementLayout | undefined): CSSProperties 
     zIndex: normalized.zIndex,
   }
 }
+
+export function clampElementLayoutPosition(
+  layout: ElementLayout | undefined,
+  deltaX: number,
+  deltaY: number,
+): { x: number; y: number } | null {
+  if (!layout) return null
+  const normalized = normalizeElementLayout(layout)
+  if (!normalized) return null
+
+  let nextX = normalized.x + deltaX
+  let nextY = normalized.y + deltaY
+
+  if (nextX < 0) nextX = 0
+  if (nextY < 0) nextY = 0
+  if (nextX + normalized.width > SLIDE_WIDTH) nextX = SLIDE_WIDTH - normalized.width
+  if (nextY + normalized.height > SLIDE_HEIGHT) nextY = SLIDE_HEIGHT - normalized.height
+
+  return { x: nextX, y: nextY }
+}

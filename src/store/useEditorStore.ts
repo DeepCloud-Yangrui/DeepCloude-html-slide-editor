@@ -5,6 +5,8 @@ import { generateId } from '@/utils/id'
 import { getTemplateById } from '@/data/templates'
 import { getElementPreset } from '@/data/animationPresets'
 import { normalizeElementStyle } from '@/utils/elementStyle'
+import { normalizeElementLayout, clampElementLayoutPosition } from '@/utils/elementLayout'
+import type { ElementLayout } from '@/types'
 
 // Debounce timer for text content and style undo snapshots
 let _undoDebounceTimer: ReturnType<typeof setTimeout> | null = null
@@ -545,6 +547,11 @@ interface EditorState {
   // Actions - Elements
   addElement: (slideId: string, type: string) => void
   updateElement: (slideId: string, elementId: string, updates: Partial<SlideElement>) => void
+  updateElementLayout: (
+    slideId: string,
+    elementId: string,
+    layoutPatch: Partial<ElementLayout>,
+  ) => void
   updateElementContent: (
     slideId: string,
     elementId: string,
@@ -799,6 +806,43 @@ export const useEditorStore = create<EditorState>()(
               ? {
                   ...s,
                   elements: s.elements.map((e) => (e.id === elementId ? { ...e, ...updates } : e)),
+                }
+              : s,
+          ),
+        })
+      },
+
+      updateElementLayout: (slideId, elementId, layoutPatch) => {
+        const slide = get().slides.find((s) => s.id === slideId)
+        if (!slide) return
+        const element = slide.elements.find((e) => e.id === elementId)
+        if (!element) return
+
+        // Layout-only update uses debounce (reuse _undoDebounceTimer)
+        if (!get()._pendingUndoSnapshot) {
+          set({ _pendingUndoSnapshot: JSON.parse(JSON.stringify(get().slides)) })
+        }
+        if (_undoDebounceTimer) clearTimeout(_undoDebounceTimer)
+        _undoDebounceTimer = setTimeout(() => get()._flushPendingUndo(), 500)
+
+        const currentLayout = normalizeElementLayout(element.layout) || {
+          x: 0,
+          y: 0,
+          width: 100,
+          height: 100,
+          zIndex: 0,
+        }
+        const merged: ElementLayout = { ...currentLayout, ...layoutPatch }
+        const normalized = normalizeElementLayout(merged)
+
+        set({
+          slides: get().slides.map((s) =>
+            s.id === slideId
+              ? {
+                  ...s,
+                  elements: s.elements.map((e) =>
+                    e.id === elementId ? { ...e, layout: normalized } : e,
+                  ),
                 }
               : s,
           ),

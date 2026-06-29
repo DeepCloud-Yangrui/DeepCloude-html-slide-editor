@@ -2,8 +2,9 @@ import type { TemplateComponentProps } from './registry'
 import AnimatedElement from './AnimatedElement'
 import InlineText from '@/components/shared/InlineText'
 import { toInlineStyle } from '@/utils/elementStyle'
-import { toLayoutStyle } from '@/utils/elementLayout'
+import { toLayoutStyle, clampElementLayoutPosition } from '@/utils/elementLayout'
 import { useEditorStore } from '@/store/useEditorStore'
+import { useState, useRef, useCallback } from 'react'
 import type {
   TextContent,
   StatCardContent,
@@ -28,6 +29,16 @@ export default function FreeCanvas({
   onElementChange,
 }: TemplateComponentProps) {
   const setSelectedElement = useEditorStore((s) => s.setSelectedElement)
+  const updateElementLayout = useEditorStore((s) => s.updateElementLayout)
+  const canvasRef = useRef<HTMLDivElement>(null)
+
+  const [dragging, setDragging] = useState<{
+    elementId: string
+    startX: number
+    startY: number
+    layoutX: number
+    layoutY: number
+  } | null>(null)
 
   function handleChange(elementId: string, field: string, value: string) {
     onElementChange?.(elementId, field, value)
@@ -37,10 +48,64 @@ export default function FreeCanvas({
     setSelectedElement(null)
   }
 
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent, elementId: string, layout: { x: number; y: number }) => {
+      if (e.button !== 0) return // left click only
+      e.stopPropagation()
+      const el = e.currentTarget as HTMLElement
+      el.setPointerCapture(e.pointerId)
+      setDragging({
+        elementId,
+        startX: e.clientX,
+        startY: e.clientY,
+        layoutX: layout.x,
+        layoutY: layout.y,
+      })
+    },
+    [],
+  )
+
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      if (!dragging) return
+      if (!canvasRef.current) return
+      const rect = canvasRef.current.getBoundingClientRect()
+      const scaleX = 960 / rect.width
+      const scaleY = 540 / rect.height
+      const deltaX = (e.clientX - dragging.startX) * scaleX
+      const deltaY = (e.clientY - dragging.startY) * scaleY
+      const currentLayout = {
+        x: dragging.layoutX,
+        y: dragging.layoutY,
+        width: 100,
+        height: 100,
+        zIndex: 0,
+      }
+      const clamped = clampElementLayoutPosition(currentLayout, deltaX, deltaY)
+      if (clamped) {
+        updateElementLayout(slide.id, dragging.elementId, { x: clamped.x, y: clamped.y })
+      }
+    },
+    [dragging, slide.id, updateElementLayout],
+  )
+
+  const handlePointerUp = useCallback(
+    (e: React.PointerEvent) => {
+      if (!dragging) return
+      const el = e.currentTarget as HTMLElement
+      el.releasePointerCapture(e.pointerId)
+      setDragging(null)
+    },
+    [dragging],
+  )
+
   return (
     <div
+      ref={canvasRef}
       className="w-full h-full relative overflow-hidden"
       onClick={handleCanvasClick}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
       style={{
         width: '960px',
         height: '540px',
@@ -244,11 +309,13 @@ export default function FreeCanvas({
               style={{
                 ...toLayoutStyle(layout),
                 overflow: 'hidden',
+                cursor: mode === 'editor' ? 'move' : undefined,
               }}
               onClick={(e) => {
                 e.stopPropagation()
                 onElementClick?.(element.id)
               }}
+              onPointerDown={(e) => handlePointerDown(e, element.id, layout)}
             >
               {renderContent()}
             </div>
