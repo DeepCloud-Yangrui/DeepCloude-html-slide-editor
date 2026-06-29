@@ -654,9 +654,10 @@ export const useEditorStore = create<EditorState>()(
       deleteSlide: (slideId) => {
         const slides = get().slides
         if (slides.length <= 1) return
+        const deletedIndex = slides.findIndex((s) => s.id === slideId)
+        if (deletedIndex === -1) return
         get()._pushUndo()
         const newSlides = slides.filter((s) => s.id !== slideId).map((s, i) => ({ ...s, order: i }))
-        const deletedIndex = slides.findIndex((s) => s.id === slideId)
         const newCurrentId =
           get().currentSlideId === slideId
             ? (newSlides[Math.min(deletedIndex, newSlides.length - 1)]?.id ?? null)
