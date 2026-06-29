@@ -16,20 +16,17 @@ import { generateId } from '@/utils/id'
 import IconButton from '@/components/shared/IconButton'
 import Button from '@/components/shared/Button'
 
-interface ToolbarProps {
-  onUndo?: () => void
-  onRedo?: () => void
-  canUndo?: boolean
-  canRedo?: boolean
-}
-
-export default function Toolbar({ onUndo, onRedo, canUndo, canRedo }: ToolbarProps) {
+export default function Toolbar() {
   const navigate = useNavigate()
   const title = useEditorStore((s) => s.title)
   const setTitle = useEditorStore((s) => s.setTitle)
   const presentationId = useEditorStore((s) => s.presentationId)
   const showPropertiesPanel = useEditorStore((s) => s.showPropertiesPanel)
   const togglePropertiesPanel = useEditorStore((s) => s.togglePropertiesPanel)
+  const canUndo = useEditorStore((s) => s._undoStack.length > 0)
+  const canRedo = useEditorStore((s) => s._redoStack.length > 0)
+  const undo = useEditorStore((s) => s.undo)
+  const redo = useEditorStore((s) => s.redo)
   const jsonInputRef = useRef<HTMLInputElement>(null)
 
   const handlePresent = () => {
@@ -103,10 +100,10 @@ export default function Toolbar({ onUndo, onRedo, canUndo, canRedo }: ToolbarPro
 
       {/* Right: Actions */}
       <div className="flex items-center gap-2">
-        <IconButton tooltip="撤销" onClick={onUndo} disabled={!canUndo}>
+        <IconButton tooltip="撤销 (Ctrl+Z)" onClick={undo} disabled={!canUndo}>
           <Undo2 size={18} />
         </IconButton>
-        <IconButton tooltip="重做" onClick={onRedo} disabled={!canRedo}>
+        <IconButton tooltip="重做 (Ctrl+Shift+Z)" onClick={redo} disabled={!canRedo}>
           <Redo2 size={18} />
         </IconButton>
 

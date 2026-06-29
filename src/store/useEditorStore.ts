@@ -1,9 +1,12 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Slide, SlideElement, PresentationSettings, TransitionType } from '@/types'
+import type { Slide, SlideElement, PresentationSettings } from '@/types'
 import { generateId } from '@/utils/id'
 import { getTemplateById } from '@/data/templates'
 import { getElementPreset } from '@/data/animationPresets'
+
+// Debounce timer for updateElementContent undo snapshots
+let _contentDebounceTimer: ReturnType<typeof setTimeout> | null = null
 
 function createDefaultElement(type: string, overrides: Partial<SlideElement> = {}): SlideElement {
   const preset = getElementPreset('gentle', type)
@@ -478,6 +481,12 @@ interface EditorState {
   showTemplatePicker: boolean
   showPropertiesPanel: boolean
 
+  // Undo/Redo
+  _undoStack: Slide[][]
+  _redoStack: Slide[][]
+  _pendingUndoSnapshot: Slide[] | null
+  _maxUndoSteps: number
+
   // Actions - Presentation
   setPresentation: (id: string, title: string) => void
   setTitle: (title: string) => void
@@ -515,6 +524,12 @@ interface EditorState {
   // Actions - UI
   toggleTemplatePicker: () => void
   togglePropertiesPanel: () => void
+
+  // Actions - Undo/Redo
+  _pushUndo: () => void
+  _flushPendingUndo: () => void
+  undo: () => void
+  redo: () => void
 }
 
 export const useEditorStore = create<EditorState>()(
@@ -540,6 +555,12 @@ export const useEditorStore = create<EditorState>()(
       showTemplatePicker: false,
       showPropertiesPanel: true,
 
+      // Undo/Redo
+      _undoStack: [],
+      _redoStack: [],
+      _pendingUndoSnapshot: null,
+      _maxUndoSteps: 50,
+
       // Presentation
       setPresentation: (id, title) =>
         set({
@@ -554,12 +575,14 @@ export const useEditorStore = create<EditorState>()(
       setCurrentSlide: (slideId) => set({ currentSlideId: slideId, selectedElementId: null }),
 
       addSlide: (templateId = 'bullets') => {
+        get()._pushUndo()
         const slides = get().slides
         const newSlide = createDefaultSlide(slides.length, templateId)
         set({ slides: [...slides, newSlide], currentSlideId: newSlide.id })
       },
 
       importSlidesFromHTML: (importedSlides) => {
+        get()._pushUndo()
         const slides = get().slides
         const newSlides: Slide[] = [...slides]
 
@@ -601,6 +624,7 @@ export const useEditorStore = create<EditorState>()(
       },
 
       importSlidesFromJSON: (project) => {
+        get()._pushUndo()
         set({
           title: project.title || '导入的幻灯片',
           slides: project.slides || [],
@@ -611,6 +635,7 @@ export const useEditorStore = create<EditorState>()(
       },
 
       duplicateSlide: (slideId) => {
+        get()._pushUndo()
         const slides = get().slides
         const index = slides.findIndex((s) => s.id === slideId)
         if (index === -1) return
@@ -627,6 +652,7 @@ export const useEditorStore = create<EditorState>()(
       },
 
       deleteSlide: (slideId) => {
+        get()._pushUndo()
         const slides = get().slides
         if (slides.length <= 1) return
         const newSlides = slides.filter((s) => s.id !== slideId).map((s, i) => ({ ...s, order: i }))
@@ -639,6 +665,7 @@ export const useEditorStore = create<EditorState>()(
       },
 
       moveSlide: (fromIndex, toIndex) => {
+        get()._pushUndo()
         const slides = [...get().slides]
         const [removed] = slides.splice(fromIndex, 1)
         slides.splice(toIndex, 0, removed)
@@ -646,12 +673,18 @@ export const useEditorStore = create<EditorState>()(
       },
 
       // Slide Content
-      updateSlideField: (slideId, field, value) =>
+      updateSlideField: (slideId, field, value) => {
+        // Don't push undo for speaker notes (content field) changes
+        if (field !== 'content') {
+          get()._pushUndo()
+        }
         set({
           slides: get().slides.map((s) => (s.id === slideId ? { ...s, [field]: value } : s)),
-        }),
+        })
+      },
 
       changeSlideTemplate: (slideId, templateId) => {
+        get()._pushUndo()
         const template = getTemplateById(templateId)
         set({
           slides: get().slides.map((s) =>
@@ -675,12 +708,14 @@ export const useEditorStore = create<EditorState>()(
         }),
 
       // Elements
-      addElement: (slideId, type) =>
+      addElement: (slideId, type) => {
+        get()._pushUndo()
         set({
           slides: get().slides.map((s) =>
             s.id === slideId ? { ...s, elements: [...s.elements, createDefaultElement(type)] } : s,
           ),
-        }),
+        })
+      },
 
       updateElement: (slideId, elementId, updates) =>
         set({
@@ -694,7 +729,17 @@ export const useEditorStore = create<EditorState>()(
           ),
         }),
 
-      updateElementContent: (slideId, elementId, contentUpdates) =>
+      updateElementContent: (slideId, elementId, contentUpdates) => {
+        // Debounced undo: save snapshot once, then debounce subsequent calls
+        if (!get()._pendingUndoSnapshot) {
+          set({ _pendingUndoSnapshot: JSON.parse(JSON.stringify(get().slides)) })
+        }
+        // Clear existing timer, set new 500ms timer to flush
+        if (_contentDebounceTimer) clearTimeout(_contentDebounceTimer)
+        _contentDebounceTimer = setTimeout(() => {
+          get()._flushPendingUndo()
+        }, 500)
+
         set({
           slides: get().slides.map((s) =>
             s.id === slideId
@@ -708,15 +753,18 @@ export const useEditorStore = create<EditorState>()(
                 }
               : s,
           ),
-        }),
+        })
+      },
 
-      deleteElement: (slideId, elementId) =>
+      deleteElement: (slideId, elementId) => {
+        get()._pushUndo()
         set({
           slides: get().slides.map((s) =>
             s.id === slideId ? { ...s, elements: s.elements.filter((e) => e.id !== elementId) } : s,
           ),
           selectedElementId: get().selectedElementId === elementId ? null : get().selectedElementId,
-        }),
+        })
+      },
 
       setSelectedElement: (elementId) => set({ selectedElementId: elementId }),
 
@@ -726,6 +774,63 @@ export const useEditorStore = create<EditorState>()(
       // UI
       toggleTemplatePicker: () => set({ showTemplatePicker: !get().showTemplatePicker }),
       togglePropertiesPanel: () => set({ showPropertiesPanel: !get().showPropertiesPanel }),
+
+      // ===== Undo/Redo =====
+      _pushUndo: () => {
+        const { _undoStack, _maxUndoSteps, slides } = get()
+        const snapshot = JSON.parse(JSON.stringify(slides)) as Slide[]
+        const newStack = [..._undoStack, snapshot]
+        if (newStack.length > _maxUndoSteps) newStack.shift()
+        set({ _undoStack: newStack, _redoStack: [], _pendingUndoSnapshot: null })
+      },
+
+      _flushPendingUndo: () => {
+        const { _pendingUndoSnapshot } = get()
+        if (!_pendingUndoSnapshot) return
+        const { _undoStack, _maxUndoSteps } = get()
+        const newStack = [..._undoStack, _pendingUndoSnapshot]
+        if (newStack.length > _maxUndoSteps) newStack.shift()
+        set({ _undoStack: newStack, _redoStack: [], _pendingUndoSnapshot: null })
+      },
+
+      undo: () => {
+        const { _undoStack, slides } = get()
+        if (_undoStack.length === 0) return
+        get()._flushPendingUndo()
+        const prevSlides = _undoStack[_undoStack.length - 1]
+        const currentSnapshot = JSON.parse(JSON.stringify(slides)) as Slide[]
+        const newUndoStack = _undoStack.slice(0, -1)
+        const newCurrentId =
+          prevSlides.find((s) => s.id === get().currentSlideId)
+            ? get().currentSlideId
+            : prevSlides[0]?.id ?? null
+        set({
+          slides: prevSlides,
+          _undoStack: newUndoStack,
+          _redoStack: [...get()._redoStack, currentSnapshot],
+          currentSlideId: newCurrentId,
+          selectedElementId: null,
+        })
+      },
+
+      redo: () => {
+        const { _redoStack, slides } = get()
+        if (_redoStack.length === 0) return
+        const nextSlides = _redoStack[_redoStack.length - 1]
+        const currentSnapshot = JSON.parse(JSON.stringify(slides)) as Slide[]
+        const newRedoStack = _redoStack.slice(0, -1)
+        const newCurrentId =
+          nextSlides.find((s) => s.id === get().currentSlideId)
+            ? get().currentSlideId
+            : nextSlides[0]?.id ?? null
+        set({
+          slides: nextSlides,
+          _redoStack: newRedoStack,
+          _undoStack: [...get()._undoStack, currentSnapshot],
+          currentSlideId: newCurrentId,
+          selectedElementId: null,
+        })
+      },
     }),
     {
       name: 'html-slide-editor-state',
