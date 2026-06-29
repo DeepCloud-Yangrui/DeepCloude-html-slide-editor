@@ -1,5 +1,6 @@
 import { useEditorStore, useCurrentSlide } from '@/store/useEditorStore'
 import TemplateRenderer from '@/templates/TemplateRenderer'
+import SelectionOverlay from './SelectionOverlay'
 
 export default function Canvas() {
   const currentSlide = useCurrentSlide()
@@ -14,6 +15,8 @@ export default function Canvas() {
     )
   }
 
+  const isFreeTemplate = currentSlide.templateId === 'free'
+
   function handleElementClick(elementId: string) {
     setSelectedElement(elementId)
   }
@@ -24,7 +27,6 @@ export default function Canvas() {
 
   return (
     <div className="flex-1 flex items-center justify-center bg-stone-100/50 p-8">
-      {/* Slide frame with 16:9 aspect ratio */}
       <div
         className="relative w-full max-w-[960px] slide-shadow rounded-lg overflow-hidden bg-white
                    transition-shadow duration-300 hover:slide-shadow-hover"
@@ -37,6 +39,7 @@ export default function Canvas() {
           onElementClick={handleElementClick}
           onElementChange={handleElementChange}
         />
+        {isFreeTemplate && <SelectionOverlay />}
       </div>
     </div>
   )

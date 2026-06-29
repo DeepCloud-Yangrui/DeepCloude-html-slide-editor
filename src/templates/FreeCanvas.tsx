@@ -3,6 +3,7 @@ import AnimatedElement from './AnimatedElement'
 import InlineText from '@/components/shared/InlineText'
 import { toInlineStyle } from '@/utils/elementStyle'
 import { toLayoutStyle } from '@/utils/elementLayout'
+import { useEditorStore } from '@/store/useEditorStore'
 import type {
   TextContent,
   StatCardContent,
@@ -23,15 +24,23 @@ export default function FreeCanvas({
   slide,
   mode,
   animated = false,
+  onElementClick,
   onElementChange,
 }: TemplateComponentProps) {
+  const setSelectedElement = useEditorStore((s) => s.setSelectedElement)
+
   function handleChange(elementId: string, field: string, value: string) {
     onElementChange?.(elementId, field, value)
+  }
+
+  function handleCanvasClick() {
+    setSelectedElement(null)
   }
 
   return (
     <div
       className="w-full h-full relative overflow-hidden"
+      onClick={handleCanvasClick}
       style={{
         width: '960px',
         height: '540px',
@@ -235,6 +244,10 @@ export default function FreeCanvas({
               style={{
                 ...toLayoutStyle(layout),
                 overflow: 'hidden',
+              }}
+              onClick={(e) => {
+                e.stopPropagation()
+                onElementClick?.(element.id)
               }}
             >
               {renderContent()}
