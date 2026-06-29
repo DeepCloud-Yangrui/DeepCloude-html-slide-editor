@@ -35,7 +35,7 @@ export default function Toolbar({ onUndo, onRedo, canUndo, canRedo }: ToolbarPro
           onChange={(e) => setTitle(e.target.value)}
           className="text-base font-semibold text-stone-900 bg-transparent border-none outline-none
                      focus:bg-stone-50 rounded-lg px-2 py-1 w-56 transition-colors placeholder:text-stone-400"
-          placeholder="未命名演示文稿"
+          placeholder="未命名幻灯片"
         />
       </div>
 

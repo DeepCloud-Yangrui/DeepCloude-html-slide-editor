@@ -13,7 +13,7 @@ npx tsc --noEmit  # Type-check only, no emit
 
 ## Architecture
 
-This is a **narration-video presentation tool** (口播视频演示) — a React SPA where users compose slides from templates, input narration text, then present fullscreen with Framer Motion animations.
+This is an **HTML Slide Editor** (HTML 幻灯片编辑器) — a React SPA where users compose slides from templates, add speaker notes, then present fullscreen with Framer Motion animations. Slides are stored as structured JSON and can be exported to standalone HTML or JSON files.
 
 ### Two-store design (Zustand)
 
@@ -24,7 +24,7 @@ The two are deliberately separate: presentation mutations never affect saved edi
 
 ### Slide data model
 
-A `Slide` contains structured `elements[]` (each with a `type` and typed `content`), plus metadata: `templateId`, `transitionType`, `animationPreset`, `backgroundColor`, `duration`, `content` (narration text). Template components read their content by finding specific element types — e.g., `TitleSlide` looks for elements with `content.variant === 'heading'` and `'subheading'`.
+A `Slide` contains structured `elements[]` (each with a `type` and typed `content`), plus metadata: `templateId`, `transitionType`, `animationPreset`, `backgroundColor`, `duration`, `content` (speaker notes). Template components read their content by finding specific element types — e.g., `TitleSlide` looks for elements with `content.variant === 'heading'` and `'subheading'`.
 
 ### Template system (registry pattern)
 

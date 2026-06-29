@@ -35,7 +35,7 @@ export default function NarrationPanel({ isOpen, onToggle, content, title }: Nar
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-white/10">
-              <h3 className="text-white font-semibold text-sm">口播内容</h3>
+              <h3 className="text-white font-semibold text-sm">演讲备注</h3>
               <button
                 onClick={onToggle}
                 className="w-8 h-8 flex items-center justify-center rounded-lg
@@ -51,7 +51,7 @@ export default function NarrationPanel({ isOpen, onToggle, content, title }: Nar
                 <h4 className="text-white text-base font-semibold mb-3">{title}</h4>
               )}
               <p className="text-stone-300 text-sm leading-relaxed whitespace-pre-wrap">
-                {content || '暂无口播内容'}
+                {content || '暂无演讲备注'}
               </p>
             </div>
           </motion.div>

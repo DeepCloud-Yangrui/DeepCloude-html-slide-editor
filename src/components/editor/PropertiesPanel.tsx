@@ -467,12 +467,12 @@ export default function PropertiesPanel() {
             {/* Narration content */}
             <div>
               <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">
-                口播内容
+                演讲备注
               </label>
               <textarea
                 value={currentSlide.content}
                 onChange={(e) => updateSlideField(currentSlide.id, 'content', e.target.value)}
-                placeholder="输入此页的口播内容..."
+                placeholder="输入此页的演讲备注..."
                 rows={6}
                 className="w-full px-3 py-2 rounded-lg border border-stone-200 text-sm text-stone-700
                            bg-white focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand

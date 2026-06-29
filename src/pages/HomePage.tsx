@@ -58,7 +58,7 @@ export default function HomePage() {
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand to-purple-500 flex items-center justify-center">
             <Sparkles size={18} className="text-white" />
           </div>
-          <span className="text-lg font-bold text-stone-900">口播演示</span>
+          <span className="text-lg font-bold text-stone-900">HTML Slide Editor</span>
         </div>
       </header>
 
@@ -71,10 +71,10 @@ export default function HomePage() {
           className="text-center"
         >
           <h1 className="text-display-sm text-stone-900 mb-4">
-            口播视频演示
+            HTML 幻灯片编辑器
           </h1>
           <p className="text-xl text-stone-500 mb-10 max-w-md mx-auto">
-            选择精美模板，输入口播内容，用高级动画效果呈现你的演示文稿
+            用 Web 原生方式创建、编辑、演示精美幻灯片
           </p>
 
           <div className="flex items-center justify-center gap-4">
@@ -115,9 +115,9 @@ export default function HomePage() {
           className="mt-16 grid grid-cols-3 gap-6 max-w-2xl"
         >
           {[
-            { icon: '🎨', title: '9种精美模板', desc: '从标题页到HTML导入，覆盖各种场景' },
+            { icon: '🎨', title: '10种精美模板', desc: '从标题页到HTML导入，覆盖各种场景' },
             { icon: '✨', title: '高级动画效果', desc: '弹性弹簧、错位入场、3D翻转等高级动画' },
-            { icon: '📝', title: '口播内容管理', desc: '每页独立口播内容，演示时可随时查看' },
+            { icon: '📝', title: '演讲备注', desc: '每页独立备注，演示时按 N 键随时查看' },
           ].map((feature, i) => (
             <motion.div
               key={i}
@@ -136,7 +136,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="h-12 flex items-center justify-center text-xs text-stone-400">
-        口播视频演示工具 - 让每一页都充满设计感
+        HTML Slide Editor · 让每一页都充满设计感
       </footer>
     </div>
   )

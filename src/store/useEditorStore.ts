@@ -216,7 +216,7 @@ export const useEditorStore = create<EditorState>()(
     (set, get) => ({
       // Initial data
       presentationId: '',
-      title: '未命名演示文稿',
+      title: '未命名幻灯片',
       slides: [createDefaultSlide(0, 'title')],
       settings: {
         autoPlay: false,
