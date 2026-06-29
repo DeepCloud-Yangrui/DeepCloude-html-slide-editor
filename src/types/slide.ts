@@ -94,6 +94,8 @@ export interface FooterBarContent {
   keyHint: string
 }
 
+import type { ElementStyle } from './style'
+
 export type SlideElementContent =
   | TextContent
   | ImageContent
@@ -125,7 +127,7 @@ export interface SlideElement {
   type: SlideElementType
   content: SlideElementContent
   animation: ElementAnimationConfig
-  style: Record<string, string>
+  style: ElementStyle
 }
 
 // ==================== Transition Type ====================
