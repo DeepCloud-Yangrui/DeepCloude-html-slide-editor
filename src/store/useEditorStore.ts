@@ -188,6 +188,7 @@ interface EditorState {
   setCurrentSlide: (slideId: string) => void
   addSlide: (templateId?: string) => void
   importSlidesFromHTML: (slides: { title: string; html: string; css: string; index: number }[]) => void
+  importSlidesFromJSON: (project: { title: string; slides: Slide[]; settings?: any }) => void
   duplicateSlide: (slideId: string) => void
   deleteSlide: (slideId: string) => void
   moveSlide: (fromIndex: number, toIndex: number) => void
@@ -285,6 +286,16 @@ export const useEditorStore = create<EditorState>()(
         })
 
         set({ slides: newSlides, currentSlideId: newSlides[slides.length]?.id ?? null })
+      },
+
+      importSlidesFromJSON: (project) => {
+        set({
+          title: project.title || '导入的幻灯片',
+          slides: project.slides || [],
+          settings: project.settings || get().settings,
+          currentSlideId: project.slides?.[0]?.id ?? null,
+          selectedElementId: null,
+        })
       },
 
       duplicateSlide: (slideId) => {
@@ -411,7 +422,7 @@ export const useEditorStore = create<EditorState>()(
       togglePropertiesPanel: () => set({ showPropertiesPanel: !get().showPropertiesPanel }),
     }),
     {
-      name: 'narration-presentation-state',
+      name: 'html-slide-editor-state',
     },
   ),
 )

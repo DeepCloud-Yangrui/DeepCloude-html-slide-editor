@@ -1,10 +1,11 @@
 import { useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Plus, Upload, Sparkles } from 'lucide-react'
+import { Plus, Upload, Sparkles, FileJson, FolderOpen } from 'lucide-react'
 import { useEditorStore } from '@/store/useEditorStore'
 import { generateId } from '@/utils/id'
 import { parseHTMLSlides, readHTMLFile } from '@/utils/htmlImporter'
+import { hasSavedProject, getSavedProjectInfo } from '@/utils/storage'
 import Button from '@/components/shared/Button'
 
 export default function HomePage() {
@@ -12,18 +13,31 @@ export default function HomePage() {
   const setPresentation = useEditorStore((s) => s.setPresentation)
   const importSlidesFromHTML = useEditorStore((s) => s.importSlidesFromHTML)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const jsonInputRef = useRef<HTMLInputElement>(null)
+  const savedProject = getSavedProjectInfo()
 
   function handleCreateNew() {
     const id = generateId()
-    setPresentation(id, '未命名演示文稿')
+    setPresentation(id, '未命名幻灯片')
     navigate(`/editor/${id}`)
   }
 
-  async function handleImport() {
+  function handleContinueEditing() {
+    const id = useEditorStore.getState().presentationId
+    if (id) {
+      navigate(`/editor/${id}`)
+    }
+  }
+
+  function handleImportHTML() {
     fileInputRef.current?.click()
   }
 
-  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleImportJSON() {
+    jsonInputRef.current?.click()
+  }
+
+  async function handleHTMLFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
 
@@ -44,9 +58,41 @@ export default function HomePage() {
       alert('导入失败，请检查文件格式')
     }
 
-    // Reset file input
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
+    }
+  }
+
+  async function handleJSONFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    try {
+      const text = await file.text()
+      const data = JSON.parse(text)
+      // Full validation and import will be wired in Step 5
+      const { validateAndParseProject } = await import('@/utils/importJson')
+      const result = validateAndParseProject(data)
+
+      if (!result.ok) {
+        alert('导入失败：' + result.error)
+        return
+      }
+
+      const id = generateId()
+      setPresentation(id, result.data.project.title)
+      const store = useEditorStore.getState()
+      if (store.importSlidesFromJSON) {
+        store.importSlidesFromJSON(result.data.project)
+      }
+      navigate(`/editor/${id}`)
+    } catch (err) {
+      console.error('Failed to import JSON:', err)
+      alert('导入失败，请检查文件是否为有效的 JSON 格式')
+    }
+
+    if (jsonInputRef.current) {
+      jsonInputRef.current.value = ''
     }
   }
 
@@ -77,7 +123,7 @@ export default function HomePage() {
             用 Web 原生方式创建、编辑、演示精美幻灯片
           </p>
 
-          <div className="flex items-center justify-center gap-4">
+          <div className="flex items-center justify-center gap-4 flex-wrap">
             <Button
               variant="primary"
               size="lg"
@@ -85,7 +131,24 @@ export default function HomePage() {
               className="gap-2 text-base px-8"
             >
               <Plus size={20} />
-              创建新演示文稿
+              新建 HTML Slide
+            </Button>
+
+            <input
+              ref={jsonInputRef}
+              type="file"
+              accept=".json"
+              className="hidden"
+              onChange={handleJSONFileChange}
+            />
+            <Button
+              variant="secondary"
+              size="lg"
+              onClick={handleImportJSON}
+              className="gap-2 text-base px-8"
+            >
+              <FileJson size={20} />
+              导入 JSON 项目
             </Button>
 
             <input
@@ -93,12 +156,12 @@ export default function HomePage() {
               type="file"
               accept=".html,.htm"
               className="hidden"
-              onChange={handleFileChange}
+              onChange={handleHTMLFileChange}
             />
             <Button
               variant="secondary"
               size="lg"
-              onClick={handleImport}
+              onClick={handleImportHTML}
               className="gap-2 text-base px-8"
             >
               <Upload size={20} />
@@ -106,6 +169,36 @@ export default function HomePage() {
             </Button>
           </div>
         </motion.div>
+
+        {/* Continue editing */}
+        {hasSavedProject() && savedProject && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25, duration: 0.5 }}
+            className="mt-10"
+          >
+            <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider text-center mb-3">
+              继续编辑
+            </p>
+            <button
+              onClick={handleContinueEditing}
+              className="flex items-center gap-4 px-6 py-4 bg-white rounded-xl border border-stone-200
+                         hover:border-brand hover:shadow-elevated transition-all duration-200 text-left
+                         min-w-[320px]"
+            >
+              <div className="w-10 h-10 rounded-lg bg-brand-light flex items-center justify-center flex-shrink-0">
+                <FolderOpen size={20} className="text-brand" />
+              </div>
+              <div>
+                <div className="text-sm font-semibold text-stone-900">{savedProject.title}</div>
+                <div className="text-xs text-stone-400 mt-0.5">
+                  {savedProject.slideCount} 张幻灯片
+                </div>
+              </div>
+            </button>
+          </motion.div>
+        )}
 
         {/* Feature hints */}
         <motion.div
