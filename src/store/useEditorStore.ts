@@ -635,10 +635,10 @@ export const useEditorStore = create<EditorState>()(
       },
 
       duplicateSlide: (slideId) => {
-        get()._pushUndo()
         const slides = get().slides
         const index = slides.findIndex((s) => s.id === slideId)
         if (index === -1) return
+        get()._pushUndo()
         const original = slides[index]
         const newSlide: Slide = {
           ...JSON.parse(JSON.stringify(original)),
@@ -652,9 +652,9 @@ export const useEditorStore = create<EditorState>()(
       },
 
       deleteSlide: (slideId) => {
-        get()._pushUndo()
         const slides = get().slides
         if (slides.length <= 1) return
+        get()._pushUndo()
         const newSlides = slides.filter((s) => s.id !== slideId).map((s, i) => ({ ...s, order: i }))
         const deletedIndex = slides.findIndex((s) => s.id === slideId)
         const newCurrentId =
@@ -665,11 +665,14 @@ export const useEditorStore = create<EditorState>()(
       },
 
       moveSlide: (fromIndex, toIndex) => {
+        const slides = get().slides
+        if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0) return
+        if (fromIndex >= slides.length || toIndex >= slides.length) return
         get()._pushUndo()
-        const slides = [...get().slides]
-        const [removed] = slides.splice(fromIndex, 1)
-        slides.splice(toIndex, 0, removed)
-        set({ slides: slides.map((s, i) => ({ ...s, order: i })) })
+        const newSlides = [...slides]
+        const [removed] = newSlides.splice(fromIndex, 1)
+        newSlides.splice(toIndex, 0, removed)
+        set({ slides: newSlides.map((s, i) => ({ ...s, order: i })) })
       },
 
       // Slide Content
@@ -684,8 +687,11 @@ export const useEditorStore = create<EditorState>()(
       },
 
       changeSlideTemplate: (slideId, templateId) => {
-        get()._pushUndo()
         const template = getTemplateById(templateId)
+        if (!template) return
+        const slide = get().slides.find((s) => s.id === slideId)
+        if (!slide || slide.templateId === templateId) return
+        get()._pushUndo()
         set({
           slides: get().slides.map((s) =>
             s.id === slideId
@@ -709,6 +715,7 @@ export const useEditorStore = create<EditorState>()(
 
       // Elements
       addElement: (slideId, type) => {
+        if (!get().slides.some((s) => s.id === slideId)) return
         get()._pushUndo()
         set({
           slides: get().slides.map((s) =>
@@ -757,6 +764,8 @@ export const useEditorStore = create<EditorState>()(
       },
 
       deleteElement: (slideId, elementId) => {
+        const slide = get().slides.find((s) => s.id === slideId)
+        if (!slide || !slide.elements.some((e) => e.id === elementId)) return
         get()._pushUndo()
         set({
           slides: get().slides.map((s) =>
@@ -794,37 +803,43 @@ export const useEditorStore = create<EditorState>()(
       },
 
       undo: () => {
-        const { _undoStack, slides } = get()
-        if (_undoStack.length === 0) return
+        // 1. Flush any pending content-editing snapshot first
         get()._flushPendingUndo()
+        // 2. Re-read latest state AFTER flush
+        const state = get()
+        const { _undoStack, slides } = state
+        if (_undoStack.length === 0) return
         const prevSlides = _undoStack[_undoStack.length - 1]
         const currentSnapshot = JSON.parse(JSON.stringify(slides)) as Slide[]
         const newUndoStack = _undoStack.slice(0, -1)
-        const newCurrentId = prevSlides.find((s) => s.id === get().currentSlideId)
-          ? get().currentSlideId
+        const newCurrentId = prevSlides.find((s) => s.id === state.currentSlideId)
+          ? state.currentSlideId
           : (prevSlides[0]?.id ?? null)
         set({
           slides: prevSlides,
           _undoStack: newUndoStack,
-          _redoStack: [...get()._redoStack, currentSnapshot],
+          _redoStack: [...state._redoStack, currentSnapshot],
           currentSlideId: newCurrentId,
           selectedElementId: null,
         })
       },
 
       redo: () => {
-        const { _redoStack, slides } = get()
+        // Clear any pending snapshot — redo should start from a clean base
+        get()._flushPendingUndo()
+        const state = get()
+        const { _redoStack, slides } = state
         if (_redoStack.length === 0) return
         const nextSlides = _redoStack[_redoStack.length - 1]
         const currentSnapshot = JSON.parse(JSON.stringify(slides)) as Slide[]
         const newRedoStack = _redoStack.slice(0, -1)
-        const newCurrentId = nextSlides.find((s) => s.id === get().currentSlideId)
-          ? get().currentSlideId
+        const newCurrentId = nextSlides.find((s) => s.id === state.currentSlideId)
+          ? state.currentSlideId
           : (nextSlides[0]?.id ?? null)
         set({
           slides: nextSlides,
           _redoStack: newRedoStack,
-          _undoStack: [...get()._undoStack, currentSnapshot],
+          _undoStack: [...state._undoStack, currentSnapshot],
           currentSlideId: newCurrentId,
           selectedElementId: null,
         })
@@ -832,6 +847,14 @@ export const useEditorStore = create<EditorState>()(
     }),
     {
       name: 'html-slide-editor-state',
+      partialize: (state) => ({
+        presentationId: state.presentationId,
+        title: state.title,
+        schemaVersion: state.schemaVersion,
+        slides: state.slides,
+        settings: state.settings,
+        currentSlideId: state.currentSlideId,
+      }),
     },
   ),
 )
