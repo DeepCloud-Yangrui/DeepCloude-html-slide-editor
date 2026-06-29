@@ -1,5 +1,11 @@
-// Independent HTML export — full implementation in Step 6
+// Independent HTML export
 import type { Slide, PresentationSettings } from '@/types'
+import { toInlineStyleString } from '@/utils/elementStyle'
+
+function styleAttr(el: { style?: Record<string, string> }): string {
+  const css = toInlineStyleString(el.style)
+  return css ? ` style="${css}"` : ''
+}
 
 export function exportProjectToHTML(
   title: string,
@@ -50,12 +56,15 @@ function buildBasicHTML(title: string, slides: Slide[]): string {
           return `<div class="element" style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;">HTML 幻灯片（静态快照）</div>`
         }
         if (c.text)
-          return `<div class="text-block"><${c.variant === 'heading' ? 'h2' : 'p'}>${escapeHtml(c.text)}</${c.variant === 'heading' ? 'h2' : 'p'}></div>`
+          return `<div class="text-block"${styleAttr(el)}><${c.variant === 'heading' ? 'h2' : 'p'}>${escapeHtml(c.text)}</${c.variant === 'heading' ? 'h2' : 'p'}></div>`
         if (c.title && c.description)
-          return `<div class="bullet"><strong>${escapeHtml(c.title)}</strong><p>${escapeHtml(c.description)}</p></div>`
+          return `<div class="bullet"${styleAttr(el)}><strong>${escapeHtml(c.title)}</strong><p>${escapeHtml(c.description)}</p></div>`
         if (c.quote)
-          return `<blockquote>${escapeHtml(c.quote)}<footer>— ${escapeHtml(c.author || '')}</footer></blockquote>`
-        return `<div class="element">${escapeHtml(JSON.stringify(c))}</div>`
+          return `<blockquote${styleAttr(el)}>${escapeHtml(c.quote)}<footer>— ${escapeHtml(c.author || '')}</footer></blockquote>`
+        // stat-card
+        if (c.value && c.label)
+          return `<div class="stat-card"${styleAttr(el)}><div class="stat-value">${escapeHtml(c.value)}</div><div class="stat-label">${escapeHtml(c.label)}</div></div>`
+        return `<div class="element"${styleAttr(el)}>${escapeHtml(JSON.stringify(c))}</div>`
       })
       .join('\n    ')}
     ${slide.content ? `<div class="speaker-notes"><strong>备注：</strong>${escapeHtml(slide.content)}</div>` : ''}
@@ -88,6 +97,9 @@ function buildBasicHTML(title: string, slides: Slide[]): string {
   .bullet p { font-size: 15px; color: #666; }
   blockquote { font-size: 24px; font-style: italic; margin: auto; text-align: center; }
   blockquote footer { font-size: 16px; font-style: normal; color: #999; margin-top: 12px; }
+  .stat-card { background: #fff; border: 1px solid #e7e5e4; border-radius: 12px; padding: 16px; }
+  .stat-value { font-size: 28px; font-weight: 800; color: #1c1917; margin-bottom: 4px; }
+  .stat-label { font-size: 14px; color: #78716c; }
   .speaker-notes { display: none; margin-top: auto; padding-top: 10px; border-top: 1px solid #eee; font-size: 13px; color: #999; }
   .speaker-notes.visible { display: block; }
   .progress { position: absolute; top: 0; left: 0; right: 0; display: flex; gap: 2px; padding: 4px; z-index: 10; }
