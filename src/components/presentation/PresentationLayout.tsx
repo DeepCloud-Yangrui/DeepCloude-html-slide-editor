@@ -21,6 +21,7 @@ export default function PresentationLayout() {
     if (!isFullscreen) {
       enter()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Handle Escape to exit

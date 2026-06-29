@@ -6,7 +6,6 @@ import PresentationLayout from '@/components/presentation/PresentationLayout'
 export default function PresentationPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const presentationId = useEditorStore((s) => s.presentationId)
   const slides = useEditorStore((s) => s.slides)
 
   useEffect(() => {

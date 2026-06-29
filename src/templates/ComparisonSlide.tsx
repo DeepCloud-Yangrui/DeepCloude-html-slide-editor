@@ -50,7 +50,7 @@ export default function ComparisonSlide({
             </div>
             <div className="text-sm text-stone-500">当前方案</div>
           </div>
-          {rows.map((row, i) => {
+          {rows.map((row, _i) => {
             const content = row.content as ComparisonRowContent
             const LeftIcon = getIcon(content.leftIcon || 'Check')
             return (
@@ -97,7 +97,7 @@ export default function ComparisonSlide({
             </div>
             <div className="text-sm text-stone-500">对比方案</div>
           </div>
-          {rows.map((row, i) => {
+          {rows.map((row, _i) => {
             const content = row.content as ComparisonRowContent
             const RightIcon = getIcon(content.rightIcon || 'X')
             return (

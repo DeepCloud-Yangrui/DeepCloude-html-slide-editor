@@ -1,4 +1,4 @@
-import type { Slide, SlideElement, PresentationSettings } from '@/types'
+import type { Slide, PresentationSettings } from '@/types'
 
 interface ExportedProject {
   schemaVersion: string
@@ -15,7 +15,8 @@ interface ExportSlide extends Omit<Slide, 'htmlSource' | 'notes'> {
 }
 
 function sanitizeSlideForExport(slide: Slide): ExportSlide {
-  const { notes: _, ...rest } = slide
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { notes: _notes, ...rest } = slide
   // Keep htmlSource only if it's not empty
   const cleanSlide: ExportSlide = { ...rest }
   if (!cleanSlide.htmlSource) {

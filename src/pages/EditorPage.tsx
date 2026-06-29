@@ -22,7 +22,7 @@ export default function EditorPage() {
     if (presentationId !== id) {
       setPresentation(id, '未命名演示文稿')
     }
-  }, [id])
+  }, [id, presentationId, setPresentation, navigate])
 
   // Ensure a slide is always selected
   useEffect(() => {

@@ -1,16 +1,6 @@
 import { useEditorStore, useCurrentSlide } from '@/store/useEditorStore'
 import { ANIMATION_PRESETS } from '@/data/animationPresets'
-import type {
-  TransitionType,
-  SlideElement,
-  TextContent,
-  IconBulletContent,
-  StatCardContent,
-  TimelineNodeContent,
-  ComparisonRowContent,
-  QuoteBlockContent,
-  ImageContent,
-} from '@/types'
+import type { TransitionType, SlideElement } from '@/types'
 
 const TRANSITIONS: { value: TransitionType; label: string }[] = [
   { value: 'fade', label: '淡入淡出' },

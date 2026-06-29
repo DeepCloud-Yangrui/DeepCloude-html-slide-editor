@@ -56,7 +56,11 @@ export default function SlideList() {
                 index={index}
                 onSelect={() => setCurrentSlide(slide.id)}
                 onDuplicate={() => duplicateSlide(slide.id)}
-                onDelete={() => deleteSlide(slide.id)}
+                onDelete={() => {
+                  if (slides.length <= 1) return
+                  if (!window.confirm('确定要删除这张幻灯片吗？此操作可以撤销（Ctrl+Z）。')) return
+                  deleteSlide(slide.id)
+                }}
               />
             ))}
           </div>

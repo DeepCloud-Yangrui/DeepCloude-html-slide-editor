@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { migrateFromOldKey } from './utils/storage'
+import ErrorBoundary from './components/shared/ErrorBoundary'
 import App from './App'
 import './index.css'
 
@@ -10,8 +11,10 @@ migrateFromOldKey()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </ErrorBoundary>
   </React.StrictMode>,
 )

@@ -57,6 +57,16 @@ export default function Toolbar() {
     if (!file) return
 
     try {
+      // Auto-backup current project before importing
+      const currentState = useEditorStore.getState()
+      if (currentState.slides.length > 0) {
+        try {
+          exportProjectToJSON(currentState.title, currentState.settings, currentState.slides)
+        } catch {
+          // Backup failure should not block import
+        }
+      }
+
       const text = await file.text()
       const data = JSON.parse(text)
       const { validateAndParseProject } = await import('@/utils/importJson')

@@ -14,7 +14,7 @@ interface AnimatedElementProps {
 export default function AnimatedElement({
   element,
   animated,
-  index = 0,
+  index: _index = 0,
   onClick,
   className = '',
   children,

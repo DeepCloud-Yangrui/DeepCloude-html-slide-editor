@@ -5,6 +5,7 @@ import { Plus, Upload, Sparkles, FileJson, FolderOpen } from 'lucide-react'
 import { useEditorStore } from '@/store/useEditorStore'
 import { generateId } from '@/utils/id'
 import { parseHTMLSlides, readHTMLFile } from '@/utils/htmlImporter'
+import { exportProjectToJSON } from '@/utils/exportJson'
 import { hasSavedProject, getSavedProjectInfo } from '@/utils/storage'
 import Button from '@/components/shared/Button'
 
@@ -68,9 +69,18 @@ export default function HomePage() {
     if (!file) return
 
     try {
+      // Auto-backup current project before importing
+      const currentState = useEditorStore.getState()
+      if (currentState.slides.length > 0) {
+        try {
+          exportProjectToJSON(currentState.title, currentState.settings, currentState.slides)
+        } catch {
+          // Backup failure should not block import
+        }
+      }
+
       const text = await file.text()
       const data = JSON.parse(text)
-      // Full validation and import will be wired in Step 5
       const { validateAndParseProject } = await import('@/utils/importJson')
       const result = validateAndParseProject(data)
 

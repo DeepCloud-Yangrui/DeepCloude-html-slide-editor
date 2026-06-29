@@ -800,10 +800,9 @@ export const useEditorStore = create<EditorState>()(
         const prevSlides = _undoStack[_undoStack.length - 1]
         const currentSnapshot = JSON.parse(JSON.stringify(slides)) as Slide[]
         const newUndoStack = _undoStack.slice(0, -1)
-        const newCurrentId =
-          prevSlides.find((s) => s.id === get().currentSlideId)
-            ? get().currentSlideId
-            : prevSlides[0]?.id ?? null
+        const newCurrentId = prevSlides.find((s) => s.id === get().currentSlideId)
+          ? get().currentSlideId
+          : (prevSlides[0]?.id ?? null)
         set({
           slides: prevSlides,
           _undoStack: newUndoStack,
@@ -819,10 +818,9 @@ export const useEditorStore = create<EditorState>()(
         const nextSlides = _redoStack[_redoStack.length - 1]
         const currentSnapshot = JSON.parse(JSON.stringify(slides)) as Slide[]
         const newRedoStack = _redoStack.slice(0, -1)
-        const newCurrentId =
-          nextSlides.find((s) => s.id === get().currentSlideId)
-            ? get().currentSlideId
-            : nextSlides[0]?.id ?? null
+        const newCurrentId = nextSlides.find((s) => s.id === get().currentSlideId)
+          ? get().currentSlideId
+          : (nextSlides[0]?.id ?? null)
         set({
           slides: nextSlides,
           _redoStack: newRedoStack,

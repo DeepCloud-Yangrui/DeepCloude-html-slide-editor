@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import type { TemplateComponentProps } from './registry'
 import type { HTMLContent } from '@/types'
 
