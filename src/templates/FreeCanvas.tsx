@@ -80,11 +80,13 @@ export default function FreeCanvas({
     [dragging, slide.id, updateElementLayout],
   )
 
-  const handlePointerUp = useCallback(
+  const endDrag = useCallback(
     (e: React.PointerEvent) => {
       if (!dragging) return
       const el = e.currentTarget as HTMLElement
-      el.releasePointerCapture(e.pointerId)
+      if (el.hasPointerCapture(e.pointerId)) {
+        el.releasePointerCapture(e.pointerId)
+      }
       setDragging(null)
     },
     [dragging],
@@ -95,8 +97,6 @@ export default function FreeCanvas({
       ref={canvasRef}
       className="w-full h-full relative overflow-hidden"
       onClick={handleCanvasClick}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
       style={{
         width: '960px',
         height: '540px',
@@ -308,6 +308,9 @@ export default function FreeCanvas({
                 onElementClick?.(element.id)
               }}
               onPointerDown={(e) => handlePointerDown(e, element.id, normalizedLayout)}
+              onPointerMove={handlePointerMove}
+              onPointerUp={endDrag}
+              onPointerCancel={endDrag}
             >
               {renderContent()}
             </div>
