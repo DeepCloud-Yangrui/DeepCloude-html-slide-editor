@@ -85,7 +85,7 @@ export function normalizeElementStyle(input: unknown): ElementStyle {
   for (const key of ALLOWED_KEYS) {
     const val = raw[key]
     if (typeof val === 'string' && isValidFieldValue(key, val)) {
-      (style as Record<string, string>)[key] = val
+      ;(style as Record<string, string>)[key] = val
     }
   }
   return style

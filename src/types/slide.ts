@@ -95,6 +95,7 @@ export interface FooterBarContent {
 }
 
 import type { ElementStyle } from './style'
+import type { ElementLayout } from './layout'
 
 export type SlideElementContent =
   | TextContent
@@ -128,6 +129,7 @@ export interface SlideElement {
   content: SlideElementContent
   animation: ElementAnimationConfig
   style: ElementStyle
+  layout?: ElementLayout
 }
 
 // ==================== Transition Type ====================
