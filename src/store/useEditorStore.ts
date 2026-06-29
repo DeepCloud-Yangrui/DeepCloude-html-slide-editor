@@ -461,6 +461,40 @@ function getDefaultElementsForTemplate(templateId: string): SlideElement[] {
           },
         }),
       ]
+    case 'free':
+      return [
+        createDefaultElement('heading', {
+          content: {
+            text: '输入标题',
+            variant: 'heading',
+            alignment: 'left',
+            size: '3xl',
+            weight: 'bold',
+          },
+          layout: { x: 80, y: 60, width: 800, height: 80, zIndex: 1 },
+        }),
+        createDefaultElement('body', {
+          content: {
+            text: '输入正文内容，自由摆放文本和卡片元素...',
+            variant: 'body',
+            alignment: 'left',
+            size: 'md',
+            weight: 'normal',
+          },
+          layout: { x: 120, y: 170, width: 720, height: 120, zIndex: 1 },
+        }),
+        createDefaultElement('stat-card', {
+          content: {
+            value: '1,234',
+            label: '示例数据',
+            trend: 'up' as const,
+            trendValue: '+12.5%',
+            icon: 'BarChart3',
+            color: '#6366F1',
+          },
+          layout: { x: 120, y: 330, width: 220, height: 110, zIndex: 1 },
+        }),
+      ]
     default:
       return [createDefaultElement('heading'), createDefaultElement('body')]
   }

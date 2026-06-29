@@ -10,6 +10,7 @@ import ComparisonSlide from './ComparisonSlide'
 import FullImageSlide from './FullImageSlide'
 import HTMLSlide from './HTMLSlide'
 import ContentSlide from './ContentSlide'
+import FreeCanvas from './FreeCanvas'
 
 export interface TemplateComponentProps {
   slide: Slide
@@ -30,6 +31,7 @@ const registry: Record<string, ComponentType<TemplateComponentProps>> = {
   'full-image': FullImageSlide,
   html: HTMLSlide,
   content: ContentSlide,
+  free: FreeCanvas,
 }
 
 export function getTemplateComponent(templateId: string): ComponentType<TemplateComponentProps> {

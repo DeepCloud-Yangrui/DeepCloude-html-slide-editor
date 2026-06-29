@@ -111,6 +111,17 @@ export const TEMPLATES: Template[] = [
     previewColors: ['#FAFAF9', '#FFFFFF'],
     defaultAnimationPreset: 'gentle',
   },
+  {
+    id: 'free',
+    name: 'Free Canvas',
+    nameZh: '自由画布',
+    description: 'Drag and resize elements freely on a 960×540 canvas',
+    descriptionZh: '在 960×540 画布上自由摆放文本、卡片和重点信息',
+    category: 'content',
+    icon: 'Move',
+    previewColors: ['#EEF2FF', '#FFFFFF'],
+    defaultAnimationPreset: 'gentle',
+  },
 ]
 
 export function getTemplateById(id: string): Template | undefined {
