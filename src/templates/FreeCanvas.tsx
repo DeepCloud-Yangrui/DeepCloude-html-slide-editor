@@ -2,10 +2,12 @@ import type { TemplateComponentProps } from './registry'
 import AnimatedElement from './AnimatedElement'
 import InlineText from '@/components/shared/InlineText'
 import { toInlineStyle } from '@/utils/elementStyle'
-import { toLayoutStyle, clampElementLayoutPosition } from '@/utils/elementLayout'
+import { toLayoutStyle } from '@/utils/elementLayout'
+import { normalizeElementLayout } from '@/utils/elementLayout'
 import { useEditorStore } from '@/store/useEditorStore'
 import { useState, useRef, useCallback } from 'react'
 import type {
+  ElementLayout,
   TextContent,
   StatCardContent,
   CalloutContent,
@@ -36,8 +38,7 @@ export default function FreeCanvas({
     elementId: string
     startX: number
     startY: number
-    layoutX: number
-    layoutY: number
+    startLayout: ElementLayout
   } | null>(null)
 
   function handleChange(elementId: string, field: string, value: string) {
@@ -49,20 +50,15 @@ export default function FreeCanvas({
   }
 
   const handlePointerDown = useCallback(
-    (e: React.PointerEvent, elementId: string, layout: { x: number; y: number }) => {
-      if (e.button !== 0) return // left click only
+    (e: React.PointerEvent, elementId: string, layout: ElementLayout) => {
+      if (e.button !== 0) return
       e.stopPropagation()
       const el = e.currentTarget as HTMLElement
       el.setPointerCapture(e.pointerId)
-      setDragging({
-        elementId,
-        startX: e.clientX,
-        startY: e.clientY,
-        layoutX: layout.x,
-        layoutY: layout.y,
-      })
+      setSelectedElement(elementId)
+      setDragging({ elementId, startX: e.clientX, startY: e.clientY, startLayout: layout })
     },
-    [],
+    [setSelectedElement],
   )
 
   const handlePointerMove = useCallback(
@@ -74,17 +70,12 @@ export default function FreeCanvas({
       const scaleY = 540 / rect.height
       const deltaX = (e.clientX - dragging.startX) * scaleX
       const deltaY = (e.clientY - dragging.startY) * scaleY
-      const currentLayout = {
-        x: dragging.layoutX,
-        y: dragging.layoutY,
-        width: 100,
-        height: 100,
-        zIndex: 0,
+      const nextLayout = {
+        ...dragging.startLayout,
+        x: dragging.startLayout.x + deltaX,
+        y: dragging.startLayout.y + deltaY,
       }
-      const clamped = clampElementLayoutPosition(currentLayout, deltaX, deltaY)
-      if (clamped) {
-        updateElementLayout(slide.id, dragging.elementId, { x: clamped.x, y: clamped.y })
-      }
+      updateElementLayout(slide.id, dragging.elementId, nextLayout)
     },
     [dragging, slide.id, updateElementLayout],
   )
@@ -301,13 +292,14 @@ export default function FreeCanvas({
             }
           }
 
-          if (!layout) return null
+          const normalizedLayout = normalizeElementLayout(layout)
+          if (!normalizedLayout) return null
 
           return (
             <div
               key={element.id}
               style={{
-                ...toLayoutStyle(layout),
+                ...toLayoutStyle(normalizedLayout),
                 overflow: 'hidden',
                 cursor: mode === 'editor' ? 'move' : undefined,
               }}
@@ -315,7 +307,7 @@ export default function FreeCanvas({
                 e.stopPropagation()
                 onElementClick?.(element.id)
               }}
-              onPointerDown={(e) => handlePointerDown(e, element.id, layout)}
+              onPointerDown={(e) => handlePointerDown(e, element.id, normalizedLayout)}
             >
               {renderContent()}
             </div>

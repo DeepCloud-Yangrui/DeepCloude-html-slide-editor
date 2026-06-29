@@ -5,7 +5,7 @@ import { generateId } from '@/utils/id'
 import { getTemplateById } from '@/data/templates'
 import { getElementPreset } from '@/data/animationPresets'
 import { normalizeElementStyle } from '@/utils/elementStyle'
-import { normalizeElementLayout, clampElementLayoutPosition } from '@/utils/elementLayout'
+import { normalizeElementLayout } from '@/utils/elementLayout'
 import type { ElementLayout } from '@/types'
 
 // Debounce timer for text content and style undo snapshots
@@ -818,13 +818,6 @@ export const useEditorStore = create<EditorState>()(
         const element = slide.elements.find((e) => e.id === elementId)
         if (!element) return
 
-        // Layout-only update uses debounce (reuse _undoDebounceTimer)
-        if (!get()._pendingUndoSnapshot) {
-          set({ _pendingUndoSnapshot: JSON.parse(JSON.stringify(get().slides)) })
-        }
-        if (_undoDebounceTimer) clearTimeout(_undoDebounceTimer)
-        _undoDebounceTimer = setTimeout(() => get()._flushPendingUndo(), 500)
-
         const currentLayout = normalizeElementLayout(element.layout) || {
           x: 0,
           y: 0,
@@ -834,6 +827,25 @@ export const useEditorStore = create<EditorState>()(
         }
         const merged: ElementLayout = { ...currentLayout, ...layoutPatch }
         const normalized = normalizeElementLayout(merged)
+
+        // Guard: if normalize fails or layout is unchanged, skip
+        if (!normalized) return
+        if (
+          normalized.x === currentLayout.x &&
+          normalized.y === currentLayout.y &&
+          normalized.width === currentLayout.width &&
+          normalized.height === currentLayout.height &&
+          normalized.zIndex === currentLayout.zIndex
+        ) {
+          return
+        }
+
+        // Layout-only update uses debounce (reuse _undoDebounceTimer)
+        if (!get()._pendingUndoSnapshot) {
+          set({ _pendingUndoSnapshot: JSON.parse(JSON.stringify(get().slides)) })
+        }
+        if (_undoDebounceTimer) clearTimeout(_undoDebounceTimer)
+        _undoDebounceTimer = setTimeout(() => get()._flushPendingUndo(), 500)
 
         set({
           slides: get().slides.map((s) =>
