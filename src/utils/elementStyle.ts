@@ -17,7 +17,7 @@ const FONT_WEIGHT_VALUES = ['normal', 'medium', 'semibold', 'bold', 'extrabold']
 const TEXT_ALIGN_VALUES = ['left', 'center', 'right', 'justify']
 const PADDING_VALUES = ['none', 'sm', 'md', 'lg']
 const BORDER_RADIUS_VALUES = ['none', 'sm', 'md', 'lg', 'full']
-const COLOR_PATTERN = /^#[0-9a-fA-F]{3,6}$/
+const COLOR_PATTERN = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/
 
 // ===== Token → CSS mapping =====
 const FONT_SIZE_MAP: Record<string, string> = {
@@ -94,16 +94,17 @@ export function normalizeElementStyle(input: unknown): ElementStyle {
 // ===== 2. toInlineStyle — React 渲染用 CSSProperties =====
 
 export function toInlineStyle(style: ElementStyle | undefined): CSSProperties {
-  if (!style) return {}
+  const safeStyle = normalizeElementStyle(style)
   const css: CSSProperties = {}
-  if (style.fontSize) css.fontSize = FONT_SIZE_MAP[style.fontSize] ?? style.fontSize
-  if (style.fontWeight) css.fontWeight = FONT_WEIGHT_MAP[style.fontWeight] ?? style.fontWeight
-  if (style.color) css.color = style.color
-  if (style.textAlign) css.textAlign = style.textAlign as CSSProperties['textAlign']
-  if (style.backgroundColor) css.backgroundColor = style.backgroundColor
-  if (style.padding) css.padding = PADDING_MAP[style.padding] ?? style.padding
-  if (style.borderRadius)
-    css.borderRadius = BORDER_RADIUS_MAP[style.borderRadius] ?? style.borderRadius
+  if (safeStyle.fontSize) css.fontSize = FONT_SIZE_MAP[safeStyle.fontSize] ?? safeStyle.fontSize
+  if (safeStyle.fontWeight)
+    css.fontWeight = FONT_WEIGHT_MAP[safeStyle.fontWeight] ?? safeStyle.fontWeight
+  if (safeStyle.color) css.color = safeStyle.color
+  if (safeStyle.textAlign) css.textAlign = safeStyle.textAlign as CSSProperties['textAlign']
+  if (safeStyle.backgroundColor) css.backgroundColor = safeStyle.backgroundColor
+  if (safeStyle.padding) css.padding = PADDING_MAP[safeStyle.padding] ?? safeStyle.padding
+  if (safeStyle.borderRadius)
+    css.borderRadius = BORDER_RADIUS_MAP[safeStyle.borderRadius] ?? safeStyle.borderRadius
   return css
 }
 
@@ -119,30 +120,32 @@ function escapeHtml(text: string): string {
 }
 
 export function toInlineStyleString(style: ElementStyle | undefined): string {
-  if (!style) return ''
+  const safeStyle = normalizeElementStyle(style)
   const parts: string[] = []
 
-  if (style.fontSize) {
-    parts.push(`font-size:${escapeHtml(FONT_SIZE_MAP[style.fontSize] ?? style.fontSize)}`)
+  if (safeStyle.fontSize) {
+    parts.push(`font-size:${escapeHtml(FONT_SIZE_MAP[safeStyle.fontSize] ?? safeStyle.fontSize)}`)
   }
-  if (style.fontWeight) {
-    parts.push(`font-weight:${escapeHtml(FONT_WEIGHT_MAP[style.fontWeight] ?? style.fontWeight)}`)
-  }
-  if (style.color) {
-    parts.push(`color:${escapeHtml(style.color)}`)
-  }
-  if (style.textAlign) {
-    parts.push(`text-align:${escapeHtml(style.textAlign)}`)
-  }
-  if (style.backgroundColor) {
-    parts.push(`background-color:${escapeHtml(style.backgroundColor)}`)
-  }
-  if (style.padding) {
-    parts.push(`padding:${escapeHtml(PADDING_MAP[style.padding] ?? style.padding)}`)
-  }
-  if (style.borderRadius) {
+  if (safeStyle.fontWeight) {
     parts.push(
-      `border-radius:${escapeHtml(BORDER_RADIUS_MAP[style.borderRadius] ?? style.borderRadius)}`,
+      `font-weight:${escapeHtml(FONT_WEIGHT_MAP[safeStyle.fontWeight] ?? safeStyle.fontWeight)}`,
+    )
+  }
+  if (safeStyle.color) {
+    parts.push(`color:${escapeHtml(safeStyle.color)}`)
+  }
+  if (safeStyle.textAlign) {
+    parts.push(`text-align:${escapeHtml(safeStyle.textAlign)}`)
+  }
+  if (safeStyle.backgroundColor) {
+    parts.push(`background-color:${escapeHtml(safeStyle.backgroundColor)}`)
+  }
+  if (safeStyle.padding) {
+    parts.push(`padding:${escapeHtml(PADDING_MAP[safeStyle.padding] ?? safeStyle.padding)}`)
+  }
+  if (safeStyle.borderRadius) {
+    parts.push(
+      `border-radius:${escapeHtml(BORDER_RADIUS_MAP[safeStyle.borderRadius] ?? safeStyle.borderRadius)}`,
     )
   }
 
