@@ -1,7 +1,8 @@
 # HTML Slide Editor — 项目当前状态报告
 
 > 生成日期：2026-06-29  
-> 当前阶段：P0.5 完成  
+> 当前阶段：P1 完成  
+> 建议版本标记：v0.6.0  
 > 仓库：`https://github.com/DeepCloud-Yangrui/DeepCloude-html-slide-editor`
 
 ---
@@ -14,8 +15,9 @@
 
 ---
 
-## 2. 当前已完成的 P0.5 内容
+## 2. 当前已完成内容
 
+### P0.5（项目定位校正与基础清债）
 - ✅ 项目定位文案校正（首页、编辑器、演示模式、`<title>`、CLAUDE.md、bat 启动脚本）
 - ✅ 类型模型收敛（`Presentation.slides: any[]` → `Slide[]`，`Slide.notes` 标记 deprecated）
 - ✅ localStorage key 迁移（`narration-presentation-state` → `html-slide-editor-state`，显式复制旧 key 数据，保留旧 key 不删除）
@@ -25,6 +27,18 @@
 - ✅ 独立 HTML 导出雏形（静态渲染全部模板、内嵌 CSS 和翻页 JS、演讲备注 N 键切换、html 模板用 iframe sandbox="" 安全包裹）
 - ✅ 工程规范命令（`typecheck` / `lint` / `format` / `build`）
 - ✅ iframe sandbox 收紧（编辑器内 HTMLSlide 移除 allow-scripts）
+
+### P1（编辑器基础安全感增强）
+- ✅ 撤销 / 重做（Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y 键盘快捷键）
+- ✅ 8 类结构性编辑操作 + 1 类文本内容防抖编辑操作纳入 undo
+- ✅ 500ms 文本编辑防抖合并 undo 快照（连续输入不产生大量历史记录）
+- ✅ 无效操作不污染 undo stack（deleteSlide 先验证 slideId 存在、duplicateSlide 先验证 index 等）
+- ✅ undo/redo runtime 状态不进入 localStorage（`partialize` 排除 `_undoStack`、`_redoStack` 等）
+- ✅ 删除 slide 前确认对话框（"确定要删除这张幻灯片吗？此操作可以撤销（Ctrl+Z）。"）
+- ✅ JSON 导入前自动备份当前项目（HomePage 和 Toolbar 两处导入入口均已覆盖）
+- ✅ 404 页面（`src/pages/NotFoundPage.tsx`，带返回首页和继续编辑按钮）
+- ✅ React Error Boundary（`src/components/shared/ErrorBoundary.tsx`，class component，渲染错误时显示恢复 UI）
+- ✅ lint warning 从 42 降到 25（清理 17 个低风险 warning，保留 25 个合理的 `no-explicit-any`）
 - ✅ 不破坏现有 10 种模板和演示模式
 
 ---
@@ -37,7 +51,7 @@
 | 语言 | TypeScript | ^5.5.0 |
 | 构建 | Vite | ^5.4.0 |
 | 动画 | Framer Motion | ^11.0.0 |
-| 状态管理 | Zustand（含 persist 中间件） | ^4.5.0 |
+| 状态管理 | Zustand（含 persist + partialize） | ^4.5.0 |
 | 路由 | React Router DOM | ^6.26.0 |
 | 样式 | Tailwind CSS | ^3.4.0 |
 | 拖拽 | @dnd-kit/core + @dnd-kit/sortable | ^6.1.0 / ^8.0.0 |
@@ -52,15 +66,16 @@
 
 ## 4. 当前路由
 
-三条路由（`src/App.tsx`）：
+四条路由（`src/App.tsx`）：
 
 | 路径 | 页面 | 用途 |
 |------|------|------|
 | `/` | `HomePage` | 首页：新建 / 继续编辑 / 导入 JSON / 导入 HTML |
 | `/editor/:id` | `EditorPage` | 三栏编辑器 |
 | `/present/:id` | `PresentationPage` | 全屏演示播放 |
+| `*` | `NotFoundPage` | 404 页面（P1 新增） |
 
-无 404 路由、无路由守卫、无错误边界。
+已有 Error Boundary（`main.tsx` 包裹）。无路由守卫。
 
 ---
 
@@ -70,19 +85,19 @@
 src/
 ├── types/          # 4 个文件：slide, template, animation, presentation
 ├── data/           # 2 个文件：templates（10 种）、animationPresets（5 个）
-├── store/          # 2 个文件：useEditorStore（持久化）、usePresentationStore
+├── store/          # 2 个文件：useEditorStore（持久化 + partialize）、usePresentationStore
 ├── hooks/          # 4 个文件：useKeyboard, useAutoPlay, useFullscreen, useSlideNavigation
 ├── animations/     # 2 个文件：variants, transitions
-├── templates/      # 12 个文件：registry, TemplateRenderer, AnimatedElement, TitleSlide, BulletPointsSlide, ImageTextSlide, QuoteSlide, StatsSlide, TimelineSlide, ComparisonSlide, FullImageSlide, HTMLSlide, ContentSlide
+├── templates/      # 12 个文件：registry, TemplateRenderer, AnimatedElement, 10 个模板组件
 ├── components/
 │   ├── editor/     # 9 个文件：EditorLayout, Toolbar, Sidebar, SlideList, SlideThumbnail, Canvas, PropertiesPanel, TemplatePicker, TemplateCard
 │   ├── presentation/  # 6 个文件：PresentationLayout, PresentationView, AnimatedSlide, NavigationControls, ProgressBar, NarrationPanel
-│   └── shared/     # 5 个文件：Button, IconButton, Modal, Tooltip, InlineText
-├── pages/          # 3 个文件：HomePage, EditorPage, PresentationPage
+│   └── shared/     # 6 个文件：Button, IconButton, Modal, Tooltip, InlineText, ErrorBoundary（P1 新增）
+├── pages/          # 4 个文件：HomePage, EditorPage, PresentationPage, NotFoundPage（P1 新增）
 └── utils/          # 6 个文件：id, storage, htmlImporter, exportJson, importJson, exportHtml
 ```
 
-共 61 个源文件。
+共 63 个源文件。
 
 ---
 
@@ -116,6 +131,9 @@ SlideElement {
 ### schemaVersion
 仅在导出 JSON 的外层结构中：`{ "schemaVersion": "0.5.0", "project": {...} }`。不进入内部 store 类型。
 
+### Undo/Redo（P1 新增）
+Store 内部维护 `_undoStack: Slide[][]` 和 `_redoStack: Slide[][]`（快照方式），最大 50 步。通过 `partialize` 排除出 localStorage 持久化。
+
 ---
 
 ## 7. 当前模板系统
@@ -147,7 +165,7 @@ Framer Motion v11，两层架构：
 - **5 个动画预设**：gentle / dramatic / stagger / smooth / reveal
 - **特殊效果**：Ken Burns（缓慢缩放）、弹簧物理弹性
 
-动画系统 P0.5 期间未做任何修改。
+动画系统 P0.5 和 P1 期间未做任何修改。
 
 ---
 
@@ -157,11 +175,12 @@ Framer Motion v11，两层架构：
 - 入口：编辑器 Toolbar "导出 JSON" 按钮
 - 导出完整项目数据（title、settings、slides）为 `.json` 文件
 - 外层含 `schemaVersion: "0.5.0"` 和 `exportedAt`
-- 不导出 UI runtime 状态（currentSlideId、selectedElementId 等）
+- 不导出 UI runtime 状态
 - 文件命名：`{项目标题}_{YYYY-MM-DD}.json`
 
 ### JSON 导入（`src/utils/importJson.ts`）
 - 入口：首页"导入 JSON 项目"按钮 / 编辑器 Toolbar "打开 JSON" 按钮
+- 导入前自动备份当前项目（P1 新增）
 - 校验规则（宽松策略）：
   - `schemaVersion` 必须为 `0.5.x`
   - slides 数组允许为空
@@ -170,7 +189,7 @@ Framer Motion v11，两层架构：
   - 不认识的 element type → 跳过该 element（`console.warn`），不阻塞导入
   - 缺失字段自动补默认值（duration→0, backgroundColor→#FAFAF9, transitionType→fade, animationPreset→gentle 等 8 个字段）
   - 拒绝含 `__proto__` / `constructor` / `prototype` 的原型污染数据
-- 导入后生成新 presentationId，不覆盖当前项目
+- 导入后生成新 presentationId，不覆盖当前项目路由
 
 ---
 
@@ -203,11 +222,25 @@ Framer Motion v11，两层架构：
 - **迁移方式**：`src/main.tsx` 中 React 渲染之前同步执行 `migrateStorageKey()`
 - **迁移逻辑**：如果新 key 无数据且旧 key 有数据 → 复制旧 key 完整内容到新 key
 - **失败处理**：try-catch 包裹，迁移失败 fallback 到空初始状态，不导致崩溃
+- **partialize（P1 新增）**：仅持久化 `presentationId`, `title`, `schemaVersion`, `slides`, `settings`, `currentSlideId`。undo/redo 栈和弹窗状态不进入 localStorage
 - **首页"继续编辑"**：读取新 key 数据，显示项目标题 + 幻灯片数量，点击进入编辑器
 
 ---
 
-## 12. 当前工程命令
+## 12. 当前撤销/重做能力（P1 新增）
+
+- 键盘快捷键：Ctrl+Z（撤销）/ Ctrl+Shift+Z 或 Ctrl+Y（重做）
+- Toolbar 按钮已连接 store，栈空时禁用
+- 纳入 undo 的操作：
+  - 结构性编辑：addSlide、deleteSlide、duplicateSlide、moveSlide、changeSlideTemplate、updateSlideField（非 content 字段）、addElement、deleteElement
+  - 文本内容编辑：updateElementContent（500ms 防抖合并快照）
+- 最大历史步数：50
+- 无效操作不污染 undo stack：各 action 先验证操作有效性再 push 快照
+- 刷新页面后 undo/redo 栈清空（不持久化）
+
+---
+
+## 13. 当前工程命令
 
 | 命令 | 用途 |
 |------|------|
@@ -222,25 +255,37 @@ Framer Motion v11，两层架构：
 
 ---
 
-## 13. 当前 lint warning 数量
+## 14. 当前工程命令验证结果
 
-**0 errors, 42 warnings**（P0.5 过渡策略：不强制零 warning）
-
-主要 warning 来源：
-- `@typescript-eslint/no-explicit-any`（约 20 个，来自 useFullscreen、PropertiesPanel、模板组件、importJson 等）
-- 未使用变量（约 10 个，PropertiesPanel 中未使用的类型 import 等）
-- `react-hooks/exhaustive-deps`（约 3 个）
-- `@typescript-eslint/no-unused-vars`（约 9 个）
-
-P1 阶段计划逐步收紧。
+| 命令 | 结果 |
+|------|------|
+| `npm run typecheck` | ✅ 零错误 |
+| `npm run lint` | ✅ 0 errors, 25 warnings |
+| `npm run format` | ✅ 通过 |
+| `npm run build` | ✅ 通过 |
 
 ---
 
-## 14. 当前还没做的功能
+## 15. 当前 lint warning 数量
+
+**0 errors, 25 warnings**（P1 从 42 降到 25）
+
+剩余 25 个 warning 全部为 `@typescript-eslint/no-explicit-any`，分布在：
+- `useFullscreen.ts`（10 个，浏览器 fullscreen API 类型兼容，合理）
+- `PropertiesPanel.tsx`（3 个，动态 content 字段访问，合理）
+- `useEditorStore.ts`（4 个，`getDefaultContent` 返回 any 是设计选择）
+- 模板组件 `getIcon`（4 个，lucide-react 动态导入）
+- `importJson.ts`（2 个，JSON 校验需要 any）
+- 其他（2 个）
+
+P2 阶段计划逐步收紧。
+
+---
+
+## 16. 当前还没做的功能
 
 以下全部为 **未实现**：
 
-- ❌ 撤销/重做（Toolbar 有按钮但未连接 store）
 - ❌ 元素样式编辑（字体、颜色、大小、对齐选择器）
 - ❌ 元素拖拽移动/缩放（自由画布）
 - ❌ PDF 导出
@@ -256,35 +301,45 @@ P1 阶段计划逐步收紧。
 - ❌ 移动端响应式布局
 - ❌ AI 生成幻灯片
 - ❌ 多人协作
-- ❌ 404 页面 / 错误边界
 - ❌ 测试框架（零测试）
 - ❌ HTML 消毒（DOMPurify 未引入，但 iframe sandbox 已收紧）
 - ❌ 国际化（字符串硬编码中文）
+- ❌ lint 仍有 25 warnings（全部 `no-explicit-any`）
 
 ---
 
-## 15. 当前最近 6 个 commit
+## 17. 当前最近 10 个 commit
 
 ```
+6a8da25 补齐撤销重做的最后边界检查
+d4d6717 修正撤销重做的边界问题，避免持久化历史栈
+6160303 P1 编辑器安全感增强：删除确认、导入前备份、404 页面、Error Boundary、lint 清理 42→25
+961290c 实现撤销和重做，支持 8 种编辑操作的 undo/redo
+83fda1f 更新 P0.5 完成后的项目状态报告
 3c6635b 修好 P0.5 的导入校验和 HTML 导出安全细节
 cedd543 补齐 typecheck/lint/format 工程规范命令，配置 ESLint 和 Prettier，修复 iframe 安全沙箱
 3902c12 增加 JSON 导出导入功能：导出完整项目为 .json，从 .json 导入含 schema 校验
 ea5b7f3 迁移 localStorage key 到 html-slide-editor-state，兼容旧数据；首页增加继续编辑入口和 JSON 导入按钮
 8c90468 收敛类型模型：修正 Presentation.slides any[] 类型为 Slide[]，新增 schemaVersion 字段
-b97cefe 校正项目定位：把所有用户可见文案从"口播视频演示"改为"HTML Slide Editor"
 ```
 
 ---
 
-## 16. 下一阶段建议（P1 候选）
+## 18. 下一阶段建议（P2 候选）
 
-按优先级排序：
+**P2 建议优先做"元素样式编辑基础版"**，不要直接跳 PDF/PPTX 或 AI：
 
-1. **撤销/重做** — 在 `useEditorStore` 中实现命令历史栈，连接 Toolbar 按钮。这是编辑器基本体验的缺失。
-2. **元素样式编辑** — PropertiesPanel 增加字体、颜色、字号、对齐选择器，让用户可调整元素视觉样式。
-3. **HTML 消毒** — 引入 DOMPurify，在 HTML 导入时对内容消毒。当前 iframe sandbox 收紧已降低风险，但不是根治。
-4. **演示者视图** — 双屏支持：一台显示幻灯片、一台显示演讲备注和计时器。
-5. **多项目管理** — 首页支持多个项目的列表、重命名、删除。
-6. **PDF 导出** — 引入 html2canvas + jspdf 或类似方案。
-7. **收紧 lint** — 在 P1 末尾启用 `--max-warnings 0`。
-8. **引入 Vitest** — 建立测试基础设施，为核心 store 和工具函数编写测试。
+1. **元素样式编辑** — PropertiesPanel 增加基础样式控件：
+   - 字体大小（sm/md/lg/xl/2xl 下拉选择）
+   - 字重（normal/medium/semibold/bold）
+   - 文字颜色（color picker）
+   - 文本对齐（left/center/right 按钮组）
+   - 卡片背景色（color picker）
+   - 简单间距（padding 调节）
+   - 先不做自由拖拽
+2. **HTML 消毒** — 引入 DOMPurify，在 HTML 导入时对内容消毒
+3. **多项目管理** — 首页支持多个项目的列表、重命名、删除
+4. **演示者视图** — 双屏支持：一台显示幻灯片、一台显示演讲备注和计时器
+5. **PDF 导出** — 引入 html2canvas + jspdf 或类似方案
+6. **收紧 lint** — 逐步清理 `no-explicit-any`，最终启用 `--max-warnings 0`
+7. **引入 Vitest** — 建立测试基础设施，为核心 store 和工具函数编写测试
