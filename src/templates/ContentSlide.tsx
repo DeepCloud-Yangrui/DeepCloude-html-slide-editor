@@ -89,7 +89,10 @@ export default function ContentSlide({
             }
             return (
               <AnimatedElement key={element.id} element={element} animated={animated} index={i}>
-                <p className="text-stone-600 leading-relaxed mb-4">
+                <p
+                  className="text-stone-600 leading-relaxed mb-4"
+                  style={toInlineStyle(element.style)}
+                >
                   <InlineText
                     value={content.text}
                     onChange={(v) => handleChange(element.id, 'text', v)}

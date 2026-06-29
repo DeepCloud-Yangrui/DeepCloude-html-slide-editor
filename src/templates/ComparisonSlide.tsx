@@ -61,6 +61,7 @@ export default function ComparisonSlide({
               <div
                 key={row.id}
                 className="flex items-center gap-3 py-2.5 border-b border-stone-50 last:border-0"
+                style={toInlineStyle(row.style)}
               >
                 <LeftIcon size={16} className="text-emerald-500 flex-shrink-0" />
                 <div>
@@ -108,6 +109,7 @@ export default function ComparisonSlide({
               <div
                 key={row.id}
                 className="flex items-center gap-3 py-2.5 border-b border-stone-50 last:border-0"
+                style={toInlineStyle(row.style)}
               >
                 <RightIcon size={16} className="text-amber-500 flex-shrink-0" />
                 <div>

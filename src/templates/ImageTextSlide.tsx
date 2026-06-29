@@ -45,7 +45,10 @@ export default function ImageTextSlide({
       )}
       {body && (
         <AnimatedElement element={body} animated={animated} index={1}>
-          <p className="text-stone-500 leading-relaxed">
+          <p
+            className="text-stone-500 leading-relaxed"
+            style={body ? toInlineStyle(body.style) : undefined}
+          >
             <InlineText
               value={(body.content as TextContent).text}
               onChange={(v) => handleChange(body.id, v)}

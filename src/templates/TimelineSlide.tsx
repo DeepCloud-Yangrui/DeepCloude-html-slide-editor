@@ -61,7 +61,7 @@ export default function TimelineSlide({
             const Icon = getIcon(content.icon)
             return (
               <AnimatedElement key={node.id} element={node} animated={animated} index={i + 1}>
-                <div className="flex items-start gap-5 relative">
+                <div className="flex items-start gap-5 relative" style={toInlineStyle(node.style)}>
                   <motion.div
                     className="absolute left-[-33px] top-1.5 w-4 h-4 rounded-full bg-brand border-4 border-white shadow-sm z-10"
                     initial={animated ? { scale: 0 } : undefined}
