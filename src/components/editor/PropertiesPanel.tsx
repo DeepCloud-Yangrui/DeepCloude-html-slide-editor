@@ -352,6 +352,256 @@ function ElementEditor({ element }: { element: SlideElement }) {
           )}
         </div>
       )}
+      {/* Style editor */}
+      <StyleEditor element={element} currentSlideId={currentSlide.id} />
+    </div>
+  )
+}
+
+// ===== Style Editor =====
+
+const TEXT_STYLE_TYPES = [
+  'text',
+  'icon-bullet',
+  'callout',
+  'quote-block',
+  'timeline-node',
+  'comparison-row',
+]
+const CONTAINER_STYLE_TYPES = ['stat-card', 'callout', 'icon-bullet']
+
+const FONT_SIZE_OPTIONS = [
+  { value: '', label: '默认' },
+  { value: 'sm', label: 'sm (14px)' },
+  { value: 'md', label: 'md (16px)' },
+  { value: 'lg', label: 'lg (18px)' },
+  { value: 'xl', label: 'xl (22px)' },
+  { value: '2xl', label: '2xl (28px)' },
+  { value: '3xl', label: '3xl (36px)' },
+]
+
+const FONT_WEIGHT_OPTIONS = [
+  { value: '', label: '默认' },
+  { value: 'normal', label: 'normal' },
+  { value: 'medium', label: 'medium' },
+  { value: 'semibold', label: 'semibold' },
+  { value: 'bold', label: 'bold' },
+  { value: 'extrabold', label: 'extrabold' },
+]
+
+const PADDING_OPTIONS = [
+  { value: '', label: '默认' },
+  { value: 'none', label: '无' },
+  { value: 'sm', label: '小 (8px)' },
+  { value: 'md', label: '中 (16px)' },
+  { value: 'lg', label: '大 (24px)' },
+]
+
+const BORDER_RADIUS_OPTIONS = [
+  { value: '', label: '默认' },
+  { value: 'none', label: '无' },
+  { value: 'sm', label: '小 (4px)' },
+  { value: 'md', label: '中 (8px)' },
+  { value: 'lg', label: '大 (12px)' },
+  { value: 'full', label: '全圆角' },
+]
+
+const PRESET_COLORS = ['#1C1917', '#FFFFFF', '#6366F1', '#10B981', '#EF4444', '#F59E0B']
+
+function StyleEditor({
+  element,
+  currentSlideId,
+}: {
+  element: SlideElement
+  currentSlideId: string
+}) {
+  const updateElement = useEditorStore((s) => s.updateElement)
+  const style = element.style || {}
+  const showText = TEXT_STYLE_TYPES.includes(element.type)
+  const showContainer = CONTAINER_STYLE_TYPES.includes(element.type)
+
+  if (!showText && !showContainer) return null
+
+  function updateStyle(patch: Record<string, string | undefined>) {
+    const newStyle = { ...style }
+    for (const [k, v] of Object.entries(patch)) {
+      if (v === '' || v === undefined) {
+        delete newStyle[k as keyof typeof newStyle]
+      } else {
+        ;(newStyle as Record<string, string>)[k] = v
+      }
+    }
+    updateElement(currentSlideId, element.id, { style: newStyle })
+  }
+
+  function handleReset() {
+    updateElement(currentSlideId, element.id, { style: {} })
+  }
+
+  return (
+    <div className="border-t border-stone-100 pt-4 mt-4 space-y-3">
+      <div className="flex items-center justify-between">
+        <h4 className="text-xs font-semibold text-stone-500 uppercase tracking-wider">样式</h4>
+        <button
+          onClick={handleReset}
+          className="text-xs text-red-400 hover:text-red-600 transition-colors"
+        >
+          重置样式
+        </button>
+      </div>
+
+      {showText && (
+        <>
+          {/* Font size */}
+          <div>
+            <label className="block text-xs font-medium text-stone-500 mb-1">字体大小</label>
+            <select
+              value={style.fontSize || ''}
+              onChange={(e) => updateStyle({ fontSize: e.target.value })}
+              className="w-full px-3 py-2 rounded-lg border border-stone-200 text-sm text-stone-700
+                         bg-white focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand cursor-pointer"
+            >
+              {FONT_SIZE_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Font weight */}
+          <div>
+            <label className="block text-xs font-medium text-stone-500 mb-1">字重</label>
+            <select
+              value={style.fontWeight || ''}
+              onChange={(e) => updateStyle({ fontWeight: e.target.value })}
+              className="w-full px-3 py-2 rounded-lg border border-stone-200 text-sm text-stone-700
+                         bg-white focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand cursor-pointer"
+            >
+              {FONT_WEIGHT_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Color */}
+          <div>
+            <label className="block text-xs font-medium text-stone-500 mb-1">文字颜色</label>
+            <div className="flex items-center gap-2 mb-1">
+              <input
+                type="color"
+                value={style.color || '#1C1917'}
+                onChange={(e) => updateStyle({ color: e.target.value })}
+                className="w-8 h-8 rounded border border-stone-200 cursor-pointer"
+              />
+              <span className="text-xs text-stone-400">{style.color || '默认'}</span>
+            </div>
+            <div className="flex gap-1">
+              {PRESET_COLORS.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => updateStyle({ color: c })}
+                  className="w-5 h-5 rounded border border-stone-200 hover:scale-110 transition-transform"
+                  style={{ backgroundColor: c }}
+                  title={c}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Text align */}
+          <div>
+            <label className="block text-xs font-medium text-stone-500 mb-1">文本对齐</label>
+            <div className="flex gap-1">
+              {[
+                { value: '', label: '默认' },
+                { value: 'left', label: '左' },
+                { value: 'center', label: '中' },
+                { value: 'right', label: '右' },
+                { value: 'justify', label: '两端' },
+              ].map((a) => (
+                <button
+                  key={a.value}
+                  onClick={() => updateStyle({ textAlign: a.value })}
+                  className={`flex-1 py-1.5 text-xs rounded-lg border transition-colors
+                    ${
+                      (style.textAlign || '') === a.value
+                        ? 'bg-brand-light border-brand text-brand font-medium'
+                        : 'border-stone-200 text-stone-500 hover:bg-stone-50'
+                    }`}
+                >
+                  {a.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
+      {showContainer && (
+        <>
+          {/* Background color */}
+          <div>
+            <label className="block text-xs font-medium text-stone-500 mb-1">背景色</label>
+            <div className="flex items-center gap-2 mb-1">
+              <input
+                type="color"
+                value={style.backgroundColor || '#FFFFFF'}
+                onChange={(e) => updateStyle({ backgroundColor: e.target.value })}
+                className="w-8 h-8 rounded border border-stone-200 cursor-pointer"
+              />
+              <span className="text-xs text-stone-400">{style.backgroundColor || '默认'}</span>
+            </div>
+            <div className="flex gap-1">
+              {PRESET_COLORS.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => updateStyle({ backgroundColor: c })}
+                  className="w-5 h-5 rounded border border-stone-200 hover:scale-110 transition-transform"
+                  style={{ backgroundColor: c }}
+                  title={c}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Padding */}
+          <div>
+            <label className="block text-xs font-medium text-stone-500 mb-1">内边距</label>
+            <select
+              value={style.padding || ''}
+              onChange={(e) => updateStyle({ padding: e.target.value })}
+              className="w-full px-3 py-2 rounded-lg border border-stone-200 text-sm text-stone-700
+                         bg-white focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand cursor-pointer"
+            >
+              {PADDING_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Border radius */}
+          <div>
+            <label className="block text-xs font-medium text-stone-500 mb-1">圆角</label>
+            <select
+              value={style.borderRadius || ''}
+              onChange={(e) => updateStyle({ borderRadius: e.target.value })}
+              className="w-full px-3 py-2 rounded-lg border border-stone-200 text-sm text-stone-700
+                         bg-white focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand cursor-pointer"
+            >
+              {BORDER_RADIUS_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </>
+      )}
     </div>
   )
 }
