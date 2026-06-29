@@ -22,11 +22,7 @@ export default function AnimatedSlide({ slide, direction }: AnimatedSlideProps) 
       className="absolute inset-0"
       style={{ backgroundColor: slide.backgroundColor || '#FAFAF9' }}
     >
-      <TemplateRenderer
-        slide={slide}
-        mode="presentation"
-        animated={true}
-      />
+      <TemplateRenderer slide={slide} mode="presentation" animated={true} />
     </motion.div>
   )
 }

@@ -7,10 +7,7 @@ import {
   useSensors,
   type DragEndEvent,
 } from '@dnd-kit/core'
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useEditorStore } from '@/store/useEditorStore'
 import SlideThumbnail from './SlideThumbnail'
 

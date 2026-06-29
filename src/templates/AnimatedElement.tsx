@@ -37,9 +37,7 @@ export default function AnimatedElement({
       transition={{
         delay: element.animation.delay,
         duration: element.animation.duration,
-        ease: element.animation.easing === 'spring'
-          ? undefined
-          : [0.25, 0.1, 0.25, 1],
+        ease: element.animation.easing === 'spring' ? undefined : [0.25, 0.1, 0.25, 1],
       }}
       className={className}
       onClick={onClick}

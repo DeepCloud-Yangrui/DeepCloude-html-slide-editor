@@ -53,7 +53,7 @@ export default function HTMLSlide({ slide, mode }: TemplateComponentProps) {
         ref={containerRef}
         srcDoc={fullHTML}
         className="w-full h-full border-none"
-        sandbox="allow-scripts"
+        sandbox=""
         title={slide.title || 'HTML Slide'}
         style={{ pointerEvents: mode === 'presentation' ? 'none' : 'auto' }}
       />

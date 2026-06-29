@@ -2,9 +2,18 @@ import { getTemplateById } from '@/data/templates'
 
 // Known element types from the type system
 const KNOWN_ELEMENT_TYPES = [
-  'text', 'image', 'stat-card', 'timeline-node', 'comparison-row',
-  'quote-block', 'icon-bullet', 'html-content', 'callout',
-  'tag-row', 'gloss', 'footer-bar',
+  'text',
+  'image',
+  'stat-card',
+  'timeline-node',
+  'comparison-row',
+  'quote-block',
+  'icon-bullet',
+  'html-content',
+  'callout',
+  'tag-row',
+  'gloss',
+  'footer-bar',
 ]
 
 interface ValidationResult {
@@ -103,7 +112,10 @@ export function validateAndParseProject(raw: unknown): ValidationResult | Valida
         return { ok: false, error: `第 ${i + 1} 张幻灯片第 ${j + 1} 个元素缺少 type` }
       }
       if (!KNOWN_ELEMENT_TYPES.includes(el.type)) {
-        return { ok: false, error: `第 ${i + 1} 张幻灯片第 ${j + 1} 个元素 type "${el.type}" 不在已知类型列表中` }
+        return {
+          ok: false,
+          error: `第 ${i + 1} 张幻灯片第 ${j + 1} 个元素 type "${el.type}" 不在已知类型列表中`,
+        }
       }
       if (!el.content || typeof el.content !== 'object') {
         return { ok: false, error: `第 ${i + 1} 张幻灯片第 ${j + 1} 个元素缺少 content` }

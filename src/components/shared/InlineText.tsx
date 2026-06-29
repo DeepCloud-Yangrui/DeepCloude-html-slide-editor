@@ -67,7 +67,11 @@ export default function InlineText({
 
   // Presentation mode: plain text
   if (mode === 'presentation') {
-    return <span className={className} style={style}>{value}</span>
+    return (
+      <span className={className} style={style}>
+        {value}
+      </span>
+    )
   }
 
   // Editor mode, not editing: clickable text

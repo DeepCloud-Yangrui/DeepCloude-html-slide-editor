@@ -3,7 +3,12 @@ import AnimatedElement from './AnimatedElement'
 import InlineText from '@/components/shared/InlineText'
 import type { QuoteBlockContent } from '@/types'
 
-export default function QuoteSlide({ slide, mode, animated = false, onElementChange }: TemplateComponentProps) {
+export default function QuoteSlide({
+  slide,
+  mode,
+  animated = false,
+  onElementChange,
+}: TemplateComponentProps) {
   const quoteElement = slide.elements.find((e) => e.type === 'quote-block')
   const content = quoteElement?.content as QuoteBlockContent | undefined
 
@@ -21,7 +26,8 @@ export default function QuoteSlide({ slide, mode, animated = false, onElementCha
       className="w-full h-full flex flex-col items-center justify-center relative overflow-hidden"
       style={{ backgroundColor: slide.backgroundColor || '#FAFAF9' }}
     >
-      <div className="absolute inset-0 opacity-[0.03]"
+      <div
+        className="absolute inset-0 opacity-[0.03]"
         style={{
           background: 'radial-gradient(ellipse at center, #6366F1 0%, transparent 70%)',
         }}
@@ -29,20 +35,29 @@ export default function QuoteSlide({ slide, mode, animated = false, onElementCha
 
       <svg
         className="absolute top-12 left-12 text-brand/8"
-        width="120" height="100" viewBox="0 0 120 100"
+        width="120"
+        height="100"
+        viewBox="0 0 120 100"
       >
-        <text x="0" y="100" style={{ fontFamily: 'Georgia, serif', fontSize: '160px', fill: 'currentColor' }}>"</text>
+        <text
+          x="0"
+          y="100"
+          style={{ fontFamily: 'Georgia, serif', fontSize: '160px', fill: 'currentColor' }}
+        >
+          "
+        </text>
       </svg>
 
       <div className="relative z-10 flex flex-col items-center max-w-xl px-8">
         <AnimatedElement element={quoteElement!} animated={animated} index={0}>
           <blockquote
             className={`
-              ${isBold
-                ? 'text-3xl font-extrabold text-stone-900'
-                : isMinimal
-                  ? 'text-2xl font-light text-stone-700'
-                  : 'text-2xl italic font-serif text-stone-800'
+              ${
+                isBold
+                  ? 'text-3xl font-extrabold text-stone-900'
+                  : isMinimal
+                    ? 'text-2xl font-light text-stone-700'
+                    : 'text-2xl italic font-serif text-stone-800'
               }
               text-center leading-relaxed
             `}

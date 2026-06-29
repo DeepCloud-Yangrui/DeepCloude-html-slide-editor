@@ -1,10 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react'
 
-export function useAutoPlay(
-  enabled: boolean,
-  interval: number,
-  onAdvance: () => void,
-) {
+export function useAutoPlay(enabled: boolean, interval: number, onAdvance: () => void) {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const onAdvanceRef = useRef(onAdvance)
   onAdvanceRef.current = onAdvance

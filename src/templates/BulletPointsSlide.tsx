@@ -9,8 +9,15 @@ function getIcon(name: string): LucideIcon {
   return (LucideIcons as any)[name] ?? LucideIcons.Circle
 }
 
-export default function BulletPointsSlide({ slide, mode, animated = false, onElementChange }: TemplateComponentProps) {
-  const heading = slide.elements.find((e) => e.type === 'text' && (e.content as TextContent).variant === 'heading')
+export default function BulletPointsSlide({
+  slide,
+  mode,
+  animated = false,
+  onElementChange,
+}: TemplateComponentProps) {
+  const heading = slide.elements.find(
+    (e) => e.type === 'text' && (e.content as TextContent).variant === 'heading',
+  )
   const bullets = slide.elements.filter((e) => e.type === 'icon-bullet')
 
   function handleChange(elementId: string, field: string, value: string) {

@@ -3,11 +3,22 @@ import AnimatedElement from './AnimatedElement'
 import InlineText from '@/components/shared/InlineText'
 import type { TextContent } from '@/types'
 
-export default function TitleSlide({ slide, mode, animated = false, onElementChange }: TemplateComponentProps) {
+export default function TitleSlide({
+  slide,
+  mode,
+  animated = false,
+  onElementChange,
+}: TemplateComponentProps) {
   const bgColor = slide.backgroundColor || '#FAFAF9'
-  const heading = slide.elements.find((e) => e.type === 'text' && (e.content as TextContent).variant === 'heading')
-  const subheading = slide.elements.find((e) => e.type === 'text' && (e.content as TextContent).variant === 'subheading')
-  const caption = slide.elements.find((e) => e.type === 'text' && (e.content as TextContent).variant === 'caption')
+  const heading = slide.elements.find(
+    (e) => e.type === 'text' && (e.content as TextContent).variant === 'heading',
+  )
+  const subheading = slide.elements.find(
+    (e) => e.type === 'text' && (e.content as TextContent).variant === 'subheading',
+  )
+  const caption = slide.elements.find(
+    (e) => e.type === 'text' && (e.content as TextContent).variant === 'caption',
+  )
 
   function handleChange(elementId: string, value: string) {
     onElementChange?.(elementId, 'text', value)
@@ -21,7 +32,8 @@ export default function TitleSlide({ slide, mode, animated = false, onElementCha
       <div
         className="absolute inset-0 opacity-[0.03]"
         style={{
-          background: 'radial-gradient(ellipse at 30% 50%, #6366F1 0%, transparent 60%), radial-gradient(ellipse at 70% 50%, #8B5CF6 0%, transparent 60%)',
+          background:
+            'radial-gradient(ellipse at 30% 50%, #6366F1 0%, transparent 60%), radial-gradient(ellipse at 70% 50%, #8B5CF6 0%, transparent 60%)',
         }}
       />
       <div className="absolute top-12 right-16 w-32 h-32 rounded-full border border-brand/10" />

@@ -36,12 +36,22 @@ const calloutStyles: Record<string, { bg: string; border: string; text: string; 
   },
 }
 
-export default function ContentSlide({ slide, mode, animated = false, onElementChange }: TemplateComponentProps) {
+export default function ContentSlide({
+  slide,
+  mode,
+  animated = false,
+  onElementChange,
+}: TemplateComponentProps) {
   function handleChange(elementId: string, field: string, value: string) {
     onElementChange?.(elementId, field, value)
   }
 
-  function handleGlossItemChange(elementId: string, index: number, field: 'term' | 'definition', value: string) {
+  function handleGlossItemChange(
+    elementId: string,
+    index: number,
+    field: 'term' | 'definition',
+    value: string,
+  ) {
     const element = slide.elements.find((e) => e.id === elementId)
     if (!element) return
     const content = element.content as GlossContent
@@ -76,7 +86,13 @@ export default function ContentSlide({ slide, mode, animated = false, onElementC
             return (
               <AnimatedElement key={element.id} element={element} animated={animated} index={i}>
                 <p className="text-stone-600 leading-relaxed mb-4">
-                  <InlineText value={content.text} onChange={(v) => handleChange(element.id, 'text', v)} mode={mode} placeholder="正文..." multiline />
+                  <InlineText
+                    value={content.text}
+                    onChange={(v) => handleChange(element.id, 'text', v)}
+                    mode={mode}
+                    placeholder="正文..."
+                    multiline
+                  />
                 </p>
               </AnimatedElement>
             )
@@ -102,7 +118,9 @@ export default function ContentSlide({ slide, mode, animated = false, onElementC
                           }}
                           mode={mode}
                         />
-                      ) : tag}
+                      ) : (
+                        tag
+                      )}
                     </span>
                   ))}
                 </div>
@@ -115,7 +133,9 @@ export default function ContentSlide({ slide, mode, animated = false, onElementC
             const style = calloutStyles[content.variant] ?? calloutStyles.info
             return (
               <AnimatedElement key={element.id} element={element} animated={animated} index={i}>
-                <div className={`${style.bg} ${style.text} border-l-4 ${style.border} rounded-lg px-4 py-3 mb-4`}>
+                <div
+                  className={`${style.bg} ${style.text} border-l-4 ${style.border} rounded-lg px-4 py-3 mb-4`}
+                >
                   <strong className="block text-sm mb-1">
                     <InlineText
                       value={content.title}
@@ -152,7 +172,9 @@ export default function ContentSlide({ slide, mode, animated = false, onElementC
                             onChange={(v) => handleGlossItemChange(element.id, gi, 'term', v)}
                             mode={mode}
                           />
-                        ) : item.term}
+                        ) : (
+                          item.term
+                        )}
                       </code>
                       {' = '}
                       {mode === 'editor' ? (
@@ -161,7 +183,9 @@ export default function ContentSlide({ slide, mode, animated = false, onElementC
                           onChange={(v) => handleGlossItemChange(element.id, gi, 'definition', v)}
                           mode={mode}
                         />
-                      ) : item.definition}
+                      ) : (
+                        item.definition
+                      )}
                     </span>
                   ))}
                 </div>
@@ -187,7 +211,9 @@ export default function ContentSlide({ slide, mode, animated = false, onElementC
                         onChange={(v) => handleChange(element.id, 'pageLabel', v)}
                         mode={mode}
                       />
-                    ) : content.pageLabel}
+                    ) : (
+                      content.pageLabel
+                    )}
                   </span>
                 </div>
               </AnimatedElement>

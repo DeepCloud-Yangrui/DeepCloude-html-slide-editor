@@ -17,12 +17,7 @@ export default function TemplatePicker() {
   }
 
   return (
-    <Modal
-      isOpen={showTemplatePicker}
-      onClose={toggleTemplatePicker}
-      title="选择模板"
-      size="xl"
-    >
+    <Modal isOpen={showTemplatePicker} onClose={toggleTemplatePicker} title="选择模板" size="xl">
       <div className="grid grid-cols-4 gap-4">
         {TEMPLATES.map((template) => (
           <TemplateCard

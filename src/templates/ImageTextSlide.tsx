@@ -4,9 +4,18 @@ import AnimatedElement from './AnimatedElement'
 import InlineText from '@/components/shared/InlineText'
 import type { TextContent, ImageContent } from '@/types'
 
-export default function ImageTextSlide({ slide, mode, animated = false, onElementChange }: TemplateComponentProps) {
-  const heading = slide.elements.find((e) => e.type === 'text' && (e.content as TextContent).variant === 'heading')
-  const body = slide.elements.find((e) => e.type === 'text' && (e.content as TextContent).variant === 'body')
+export default function ImageTextSlide({
+  slide,
+  mode,
+  animated = false,
+  onElementChange,
+}: TemplateComponentProps) {
+  const heading = slide.elements.find(
+    (e) => e.type === 'text' && (e.content as TextContent).variant === 'heading',
+  )
+  const body = slide.elements.find(
+    (e) => e.type === 'text' && (e.content as TextContent).variant === 'body',
+  )
   const image = slide.elements.find((e) => e.type === 'image')
   const imageContent = image?.content as ImageContent | undefined
   const imagePos = imageContent?.position ?? 'left'
@@ -72,9 +81,15 @@ export default function ImageTextSlide({ slide, mode, animated = false, onElemen
       style={{ backgroundColor: slide.backgroundColor || '#FAFAF9' }}
     >
       {isImageLeft ? (
-        <>{imageBlock}{textBlock}</>
+        <>
+          {imageBlock}
+          {textBlock}
+        </>
       ) : (
-        <>{textBlock}{imageBlock}</>
+        <>
+          {textBlock}
+          {imageBlock}
+        </>
       )}
     </div>
   )

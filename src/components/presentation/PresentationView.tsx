@@ -27,7 +27,9 @@ export default function PresentationView() {
   useKeyboard({
     ArrowRight: nextSlide,
     ArrowDown: nextSlide,
-    ' ': () => { nextSlide() },
+    ' ': () => {
+      nextSlide()
+    },
     ArrowLeft: prevSlide,
     ArrowUp: prevSlide,
     Home: () => goToSlide(0),
@@ -57,20 +59,12 @@ export default function PresentationView() {
   return (
     <div className="w-full h-screen bg-stone-950 relative overflow-hidden select-none">
       {/* Progress bar */}
-      <ProgressBar
-        currentIndex={currentIndex}
-        totalSlides={slides.length}
-        onJump={goToSlide}
-      />
+      <ProgressBar currentIndex={currentIndex} totalSlides={slides.length} onJump={goToSlide} />
 
       {/* Slide area */}
       <div className="absolute inset-0 top-4 bottom-0">
         <AnimatePresence mode="wait" initial={false}>
-          <AnimatedSlide
-            key={currentSlide.id}
-            slide={currentSlide}
-            direction={direction}
-          />
+          <AnimatedSlide key={currentSlide.id} slide={currentSlide} direction={direction} />
         </AnimatePresence>
       </div>
 
@@ -93,14 +87,8 @@ export default function PresentationView() {
       />
 
       {/* Click areas for prev/next */}
-      <div
-        className="absolute inset-y-0 left-0 w-1/4 z-30 cursor-pointer"
-        onClick={prevSlide}
-      />
-      <div
-        className="absolute inset-y-0 right-0 w-1/4 z-30 cursor-pointer"
-        onClick={nextSlide}
-      />
+      <div className="absolute inset-y-0 left-0 w-1/4 z-30 cursor-pointer" onClick={prevSlide} />
+      <div className="absolute inset-y-0 right-0 w-1/4 z-30 cursor-pointer" onClick={nextSlide} />
     </div>
   )
 }

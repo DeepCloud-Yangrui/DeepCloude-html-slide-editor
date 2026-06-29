@@ -1,10 +1,4 @@
-export type TemplateCategory =
-  | 'opening'
-  | 'content'
-  | 'visual'
-  | 'data'
-  | 'comparison'
-  | 'closing'
+export type TemplateCategory = 'opening' | 'content' | 'visual' | 'data' | 'comparison' | 'closing'
 
 export interface Template {
   id: string

@@ -55,10 +55,7 @@ export const slideTransitions: Record<string, Variants> = {
 }
 
 // ==================== Direction-aware Slide Transitions ====================
-export function getSlideVariant(
-  transitionType: string,
-  direction: 1 | -1,
-): Variants {
+export function getSlideVariant(transitionType: string, direction: 1 | -1): Variants {
   // For direction-aware transitions, we swap enter/exit
   const base = slideTransitions[transitionType] ?? slideTransitions.fade
 

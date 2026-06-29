@@ -6,11 +6,20 @@ import InlineText from '@/components/shared/InlineText'
 import { kenBurns } from '@/animations/variants'
 import type { TextContent, ImageContent } from '@/types'
 
-export default function FullImageSlide({ slide, mode, animated = false, onElementChange }: TemplateComponentProps) {
+export default function FullImageSlide({
+  slide,
+  mode,
+  animated = false,
+  onElementChange,
+}: TemplateComponentProps) {
   const image = slide.elements.find((e) => e.type === 'image')
   const imageContent = image?.content as ImageContent | undefined
-  const heading = slide.elements.find((e) => e.type === 'text' && (e.content as TextContent).variant === 'heading')
-  const subheading = slide.elements.find((e) => e.type === 'text' && (e.content as TextContent).variant === 'subheading')
+  const heading = slide.elements.find(
+    (e) => e.type === 'text' && (e.content as TextContent).variant === 'heading',
+  )
+  const subheading = slide.elements.find(
+    (e) => e.type === 'text' && (e.content as TextContent).variant === 'subheading',
+  )
 
   function handleChange(elementId: string, value: string) {
     onElementChange?.(elementId, 'text', value)

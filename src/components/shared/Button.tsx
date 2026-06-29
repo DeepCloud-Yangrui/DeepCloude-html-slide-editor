@@ -9,14 +9,10 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<string, string> = {
-  primary:
-    'bg-brand text-white hover:bg-brand-hover shadow-sm hover:shadow-md active:scale-[0.98]',
-  secondary:
-    'bg-brand-light text-brand hover:bg-brand-subtle active:scale-[0.98]',
-  ghost:
-    'text-stone-600 hover:bg-stone-100 hover:text-stone-900 active:scale-[0.98]',
-  danger:
-    'bg-red-50 text-red-600 hover:bg-red-100 active:scale-[0.98]',
+  primary: 'bg-brand text-white hover:bg-brand-hover shadow-sm hover:shadow-md active:scale-[0.98]',
+  secondary: 'bg-brand-light text-brand hover:bg-brand-subtle active:scale-[0.98]',
+  ghost: 'text-stone-600 hover:bg-stone-100 hover:text-stone-900 active:scale-[0.98]',
+  danger: 'bg-red-50 text-red-600 hover:bg-red-100 active:scale-[0.98]',
 }
 
 const sizeClasses: Record<string, string> = {
@@ -40,9 +36,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       return <Component className={classes} {...props} />
     }
 
-    return (
-      <button ref={ref} className={classes} {...props} />
-    )
+    return <button ref={ref} className={classes} {...props} />
   },
 )
 

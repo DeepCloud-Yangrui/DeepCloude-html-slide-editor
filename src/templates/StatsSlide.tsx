@@ -9,8 +9,15 @@ function getIcon(name: string): LucideIcon {
   return (LucideIcons as any)[name] ?? LucideIcons.BarChart3
 }
 
-export default function StatsSlide({ slide, mode, animated = false, onElementChange }: TemplateComponentProps) {
-  const heading = slide.elements.find((e) => e.type === 'text' && (e.content as TextContent).variant === 'heading')
+export default function StatsSlide({
+  slide,
+  mode,
+  animated = false,
+  onElementChange,
+}: TemplateComponentProps) {
+  const heading = slide.elements.find(
+    (e) => e.type === 'text' && (e.content as TextContent).variant === 'heading',
+  )
   const statCards = slide.elements.filter((e) => e.type === 'stat-card')
 
   function handleChange(elementId: string, field: string, value: string) {
@@ -40,8 +47,11 @@ export default function StatsSlide({ slide, mode, animated = false, onElementCha
           const content = card.content as StatCardContent
           const Icon = getIcon(content.icon)
           const trendColor =
-            content.trend === 'up' ? 'text-emerald-500' :
-            content.trend === 'down' ? 'text-red-500' : 'text-stone-400'
+            content.trend === 'up'
+              ? 'text-emerald-500'
+              : content.trend === 'down'
+                ? 'text-red-500'
+                : 'text-stone-400'
 
           return (
             <AnimatedElement key={card.id} element={card} animated={animated} index={i + 1}>

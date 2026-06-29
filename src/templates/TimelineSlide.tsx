@@ -10,8 +10,15 @@ function getIcon(name: string): LucideIcon {
   return (LucideIcons as any)[name] ?? LucideIcons.Circle
 }
 
-export default function TimelineSlide({ slide, mode, animated = false, onElementChange }: TemplateComponentProps) {
-  const heading = slide.elements.find((e) => e.type === 'text' && (e.content as TextContent).variant === 'heading')
+export default function TimelineSlide({
+  slide,
+  mode,
+  animated = false,
+  onElementChange,
+}: TemplateComponentProps) {
+  const heading = slide.elements.find(
+    (e) => e.type === 'text' && (e.content as TextContent).variant === 'heading',
+  )
   const nodes = slide.elements.filter((e) => e.type === 'timeline-node')
 
   function handleChange(elementId: string, field: string, value: string) {
@@ -55,7 +62,12 @@ export default function TimelineSlide({ slide, mode, animated = false, onElement
                     className="absolute left-[-33px] top-1.5 w-4 h-4 rounded-full bg-brand border-4 border-white shadow-sm z-10"
                     initial={animated ? { scale: 0 } : undefined}
                     animate={animated ? { scale: 1 } : undefined}
-                    transition={{ delay: 0.5 + i * 0.15, type: 'spring', stiffness: 300, damping: 15 }}
+                    transition={{
+                      delay: 0.5 + i * 0.15,
+                      type: 'spring',
+                      stiffness: 300,
+                      damping: 15,
+                    }}
                   />
                   <div>
                     <div className="flex items-center gap-3 mb-1">

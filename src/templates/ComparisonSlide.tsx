@@ -9,8 +9,15 @@ function getIcon(name: string): LucideIcon {
   return (LucideIcons as any)[name] ?? LucideIcons.Circle
 }
 
-export default function ComparisonSlide({ slide, mode, animated = false, onElementChange }: TemplateComponentProps) {
-  const heading = slide.elements.find((e) => e.type === 'text' && (e.content as TextContent).variant === 'heading')
+export default function ComparisonSlide({
+  slide,
+  mode,
+  animated = false,
+  onElementChange,
+}: TemplateComponentProps) {
+  const heading = slide.elements.find(
+    (e) => e.type === 'text' && (e.content as TextContent).variant === 'heading',
+  )
   const rows = slide.elements.filter((e) => e.type === 'comparison-row')
 
   function handleChange(elementId: string, field: string, value: string) {
@@ -38,14 +45,19 @@ export default function ComparisonSlide({ slide, mode, animated = false, onEleme
       <div className="flex items-stretch gap-0 max-w-2xl mx-auto w-full">
         <div className="flex-1 bg-white rounded-2xl rounded-r-none border border-stone-100 p-6">
           <div className="text-center mb-4 pb-3 border-b border-stone-100">
-            <div className="text-xs font-semibold text-brand uppercase tracking-wider mb-1">方案 A</div>
+            <div className="text-xs font-semibold text-brand uppercase tracking-wider mb-1">
+              方案 A
+            </div>
             <div className="text-sm text-stone-500">当前方案</div>
           </div>
           {rows.map((row, i) => {
             const content = row.content as ComparisonRowContent
             const LeftIcon = getIcon(content.leftIcon || 'Check')
             return (
-              <div key={row.id} className="flex items-center gap-3 py-2.5 border-b border-stone-50 last:border-0">
+              <div
+                key={row.id}
+                className="flex items-center gap-3 py-2.5 border-b border-stone-50 last:border-0"
+              >
                 <LeftIcon size={16} className="text-emerald-500 flex-shrink-0" />
                 <div>
                   <div className="text-sm font-medium text-stone-900">
@@ -73,19 +85,26 @@ export default function ComparisonSlide({ slide, mode, animated = false, onEleme
         </div>
 
         <div className="flex flex-col items-center justify-center px-3 bg-stone-50 rounded-xl relative z-10 -mx-1 shadow-sm">
-          <div className="w-8 h-8 rounded-full bg-brand text-white text-xs font-bold flex items-center justify-center">VS</div>
+          <div className="w-8 h-8 rounded-full bg-brand text-white text-xs font-bold flex items-center justify-center">
+            VS
+          </div>
         </div>
 
         <div className="flex-1 bg-white rounded-2xl rounded-l-none border border-stone-100 p-6">
           <div className="text-center mb-4 pb-3 border-b border-stone-100">
-            <div className="text-xs font-semibold text-amber-500 uppercase tracking-wider mb-1">方案 B</div>
+            <div className="text-xs font-semibold text-amber-500 uppercase tracking-wider mb-1">
+              方案 B
+            </div>
             <div className="text-sm text-stone-500">对比方案</div>
           </div>
           {rows.map((row, i) => {
             const content = row.content as ComparisonRowContent
             const RightIcon = getIcon(content.rightIcon || 'X')
             return (
-              <div key={row.id} className="flex items-center gap-3 py-2.5 border-b border-stone-50 last:border-0">
+              <div
+                key={row.id}
+                className="flex items-center gap-3 py-2.5 border-b border-stone-50 last:border-0"
+              >
                 <RightIcon size={16} className="text-amber-500 flex-shrink-0" />
                 <div>
                   <div className="text-sm font-medium text-stone-900">

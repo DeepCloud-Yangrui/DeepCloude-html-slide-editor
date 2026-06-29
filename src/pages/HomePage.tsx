@@ -116,9 +116,7 @@ export default function HomePage() {
           transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
           className="text-center"
         >
-          <h1 className="text-display-sm text-stone-900 mb-4">
-            HTML 幻灯片编辑器
-          </h1>
+          <h1 className="text-display-sm text-stone-900 mb-4">HTML 幻灯片编辑器</h1>
           <p className="text-xl text-stone-500 mb-10 max-w-md mx-auto">
             用 Web 原生方式创建、编辑、演示精美幻灯片
           </p>

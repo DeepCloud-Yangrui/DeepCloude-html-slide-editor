@@ -1,5 +1,14 @@
 import { useRef } from 'react'
-import { Play, Undo2, Redo2, PanelRightOpen, PanelRightClose, Download, FileDown, FileJson } from 'lucide-react'
+import {
+  Play,
+  Undo2,
+  Redo2,
+  PanelRightOpen,
+  PanelRightClose,
+  Download,
+  FileDown,
+  FileJson,
+} from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useEditorStore } from '@/store/useEditorStore'
 import { exportProjectToJSON } from '@/utils/exportJson'
@@ -94,18 +103,10 @@ export default function Toolbar({ onUndo, onRedo, canUndo, canRedo }: ToolbarPro
 
       {/* Right: Actions */}
       <div className="flex items-center gap-2">
-        <IconButton
-          tooltip="撤销"
-          onClick={onUndo}
-          disabled={!canUndo}
-        >
+        <IconButton tooltip="撤销" onClick={onUndo} disabled={!canUndo}>
           <Undo2 size={18} />
         </IconButton>
-        <IconButton
-          tooltip="重做"
-          onClick={onRedo}
-          disabled={!canRedo}
-        >
+        <IconButton tooltip="重做" onClick={onRedo} disabled={!canRedo}>
           <Redo2 size={18} />
         </IconButton>
 
@@ -120,17 +121,11 @@ export default function Toolbar({ onUndo, onRedo, canUndo, canRedo }: ToolbarPro
 
         <div className="w-px h-6 bg-stone-200 mx-1" />
 
-        <IconButton
-          tooltip="导出 JSON"
-          onClick={handleExportJSON}
-        >
+        <IconButton tooltip="导出 JSON" onClick={handleExportJSON}>
           <Download size={18} />
         </IconButton>
 
-        <IconButton
-          tooltip="导出 HTML"
-          onClick={handleExportHTML}
-        >
+        <IconButton tooltip="导出 HTML" onClick={handleExportHTML}>
           <FileDown size={18} />
         </IconButton>
 
@@ -141,19 +136,11 @@ export default function Toolbar({ onUndo, onRedo, canUndo, canRedo }: ToolbarPro
           className="hidden"
           onChange={handleJSONFileChange}
         />
-        <IconButton
-          tooltip="打开 JSON"
-          onClick={handleOpenJSON}
-        >
+        <IconButton tooltip="打开 JSON" onClick={handleOpenJSON}>
           <FileJson size={18} />
         </IconButton>
 
-        <Button
-          variant="primary"
-          size="md"
-          onClick={handlePresent}
-          className="gap-2"
-        >
+        <Button variant="primary" size="md" onClick={handlePresent} className="gap-2">
           <Play size={16} />
           演示
         </Button>

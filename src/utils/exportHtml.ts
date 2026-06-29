@@ -39,15 +39,20 @@ function buildBasicHTML(title: string, slides: Slide[]): string {
     .map(
       (slide, i) => `
   <div class="slide" id="slide-${i}" style="display:${i === 0 ? 'flex' : 'none'}">
-    ${slide.elements.map((el: any) => {
-      const c = el.content
-      if (c.text) return `<div class="text-block"><${c.variant === 'heading' ? 'h2' : 'p'}>${escapeHtml(c.text)}</${c.variant === 'heading' ? 'h2' : 'p'}></div>`
-      if (c.title && c.description) return `<div class="bullet"><strong>${escapeHtml(c.title)}</strong><p>${escapeHtml(c.description)}</p></div>`
-      if (c.quote) return `<blockquote>${escapeHtml(c.quote)}<footer>— ${escapeHtml(c.author || '')}</footer></blockquote>`
-      return `<div class="element">${escapeHtml(JSON.stringify(c))}</div>`
-    }).join('\n    ')}
+    ${slide.elements
+      .map((el: any) => {
+        const c = el.content
+        if (c.text)
+          return `<div class="text-block"><${c.variant === 'heading' ? 'h2' : 'p'}>${escapeHtml(c.text)}</${c.variant === 'heading' ? 'h2' : 'p'}></div>`
+        if (c.title && c.description)
+          return `<div class="bullet"><strong>${escapeHtml(c.title)}</strong><p>${escapeHtml(c.description)}</p></div>`
+        if (c.quote)
+          return `<blockquote>${escapeHtml(c.quote)}<footer>— ${escapeHtml(c.author || '')}</footer></blockquote>`
+        return `<div class="element">${escapeHtml(JSON.stringify(c))}</div>`
+      })
+      .join('\n    ')}
     ${slide.content ? `<div class="speaker-notes"><strong>备注：</strong>${escapeHtml(slide.content)}</div>` : ''}
-  </div>`
+  </div>`,
     )
     .join('\n')
 

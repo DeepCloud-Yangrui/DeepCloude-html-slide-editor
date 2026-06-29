@@ -12,9 +12,10 @@ function TemplateCard({ template, isSelected, onSelect }: TemplateCardProps) {
     <button
       onClick={onSelect}
       className={`group relative flex flex-col rounded-xl overflow-hidden transition-all duration-200 text-left
-        ${isSelected
-          ? 'ring-2 ring-brand ring-offset-2'
-          : 'hover:ring-1 hover:ring-stone-300 hover:shadow-elevated'
+        ${
+          isSelected
+            ? 'ring-2 ring-brand ring-offset-2'
+            : 'hover:ring-1 hover:ring-stone-300 hover:shadow-elevated'
         }`}
     >
       {/* Preview area with gradient */}

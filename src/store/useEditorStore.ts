@@ -26,21 +26,60 @@ function createDefaultElement(type: string, overrides: Partial<SlideElement> = {
 function getDefaultContent(type: string): any {
   switch (type) {
     case 'heading':
-      return { text: '点击输入标题', variant: 'heading', alignment: 'center', size: '4xl', weight: 'bold' }
+      return {
+        text: '点击输入标题',
+        variant: 'heading',
+        alignment: 'center',
+        size: '4xl',
+        weight: 'bold',
+      }
     case 'subheading':
-      return { text: '点击输入副标题', variant: 'subheading', alignment: 'center', size: 'xl', weight: 'normal' }
+      return {
+        text: '点击输入副标题',
+        variant: 'subheading',
+        alignment: 'center',
+        size: 'xl',
+        weight: 'normal',
+      }
     case 'body':
-      return { text: '正文内容...', variant: 'body', alignment: 'left', size: 'md', weight: 'normal' }
+      return {
+        text: '正文内容...',
+        variant: 'body',
+        alignment: 'left',
+        size: 'md',
+        weight: 'normal',
+      }
     case 'caption':
-      return { text: '注释说明', variant: 'caption', alignment: 'center', size: 'sm', weight: 'normal' }
+      return {
+        text: '注释说明',
+        variant: 'caption',
+        alignment: 'center',
+        size: 'sm',
+        weight: 'normal',
+      }
     case 'icon-bullet':
       return { icon: 'Circle', title: '要点标题', description: '要点描述...' }
     case 'stat-card':
-      return { value: '100', label: '指标', trend: 'up' as const, trendValue: '+20%', icon: 'TrendingUp', color: '#6366F1' }
+      return {
+        value: '100',
+        label: '指标',
+        trend: 'up' as const,
+        trendValue: '+20%',
+        icon: 'TrendingUp',
+        color: '#6366F1',
+      }
     case 'timeline-node':
       return { date: '2024', title: '事件标题', description: '事件描述...', icon: 'Circle' }
     case 'comparison-row':
-      return { label: '特性', leftValue: 'A', rightValue: 'B', leftDetail: '', rightDetail: '', leftIcon: 'Check', rightIcon: 'X' }
+      return {
+        label: '特性',
+        leftValue: 'A',
+        rightValue: 'B',
+        leftDetail: '',
+        rightDetail: '',
+        leftIcon: 'Check',
+        rightIcon: 'X',
+      }
     case 'quote-block':
       return { quote: '引用内容...', author: '作者', role: '职位', style: 'decorative' as const }
     case 'image':
@@ -85,78 +124,337 @@ function getDefaultElementsForTemplate(templateId: string): SlideElement[] {
   switch (templateId) {
     case 'title':
       return [
-        createDefaultElement('heading', { content: { text: '输入标题', variant: 'heading', alignment: 'center', size: '5xl', weight: 'extrabold' } }),
-        createDefaultElement('subheading', { animation: { ...createDefaultElement('subheading').animation, delay: 0.2 }, content: { text: '输入副标题', variant: 'subheading', alignment: 'center', size: 'xl', weight: 'normal' } }),
-        createDefaultElement('caption', { animation: { ...createDefaultElement('caption').animation, delay: 0.5 }, content: { text: '输入作者/日期信息', variant: 'caption', alignment: 'center', size: 'sm', weight: 'normal' } }),
+        createDefaultElement('heading', {
+          content: {
+            text: '输入标题',
+            variant: 'heading',
+            alignment: 'center',
+            size: '5xl',
+            weight: 'extrabold',
+          },
+        }),
+        createDefaultElement('subheading', {
+          animation: { ...createDefaultElement('subheading').animation, delay: 0.2 },
+          content: {
+            text: '输入副标题',
+            variant: 'subheading',
+            alignment: 'center',
+            size: 'xl',
+            weight: 'normal',
+          },
+        }),
+        createDefaultElement('caption', {
+          animation: { ...createDefaultElement('caption').animation, delay: 0.5 },
+          content: {
+            text: '输入作者/日期信息',
+            variant: 'caption',
+            alignment: 'center',
+            size: 'sm',
+            weight: 'normal',
+          },
+        }),
       ]
     case 'bullets':
       return [
-        createDefaultElement('heading', { content: { text: '要点标题', variant: 'heading', alignment: 'left', size: '3xl', weight: 'bold' } }),
-        createDefaultElement('icon-bullet', { content: { icon: 'Zap', title: '第一个要点', description: '描述第一个要点的详细内容' } }),
-        createDefaultElement('icon-bullet', { animation: { ...createDefaultElement('icon-bullet').animation, delay: 0.12 }, content: { icon: 'Star', title: '第二个要点', description: '描述第二个要点的详细内容' } }),
-        createDefaultElement('icon-bullet', { animation: { ...createDefaultElement('icon-bullet').animation, delay: 0.24 }, content: { icon: 'Heart', title: '第三个要点', description: '描述第三个要点的详细内容' } }),
+        createDefaultElement('heading', {
+          content: {
+            text: '要点标题',
+            variant: 'heading',
+            alignment: 'left',
+            size: '3xl',
+            weight: 'bold',
+          },
+        }),
+        createDefaultElement('icon-bullet', {
+          content: { icon: 'Zap', title: '第一个要点', description: '描述第一个要点的详细内容' },
+        }),
+        createDefaultElement('icon-bullet', {
+          animation: { ...createDefaultElement('icon-bullet').animation, delay: 0.12 },
+          content: { icon: 'Star', title: '第二个要点', description: '描述第二个要点的详细内容' },
+        }),
+        createDefaultElement('icon-bullet', {
+          animation: { ...createDefaultElement('icon-bullet').animation, delay: 0.24 },
+          content: { icon: 'Heart', title: '第三个要点', description: '描述第三个要点的详细内容' },
+        }),
       ]
     case 'image-text':
       return [
-        createDefaultElement('heading', { content: { text: '图文标题', variant: 'heading', alignment: 'left', size: '3xl', weight: 'bold' } }),
-        createDefaultElement('image', { animation: { ...createDefaultElement('image').animation, delay: 0 }, content: { src: '', alt: '图片描述', fit: 'cover', caption: '', position: 'left' } }),
-        createDefaultElement('body', { animation: { ...createDefaultElement('body').animation, delay: 0.2 }, content: { text: '这里是正文内容，配合图片进行说明...', variant: 'body', alignment: 'left', size: 'md', weight: 'normal' } }),
+        createDefaultElement('heading', {
+          content: {
+            text: '图文标题',
+            variant: 'heading',
+            alignment: 'left',
+            size: '3xl',
+            weight: 'bold',
+          },
+        }),
+        createDefaultElement('image', {
+          animation: { ...createDefaultElement('image').animation, delay: 0 },
+          content: { src: '', alt: '图片描述', fit: 'cover', caption: '', position: 'left' },
+        }),
+        createDefaultElement('body', {
+          animation: { ...createDefaultElement('body').animation, delay: 0.2 },
+          content: {
+            text: '这里是正文内容，配合图片进行说明...',
+            variant: 'body',
+            alignment: 'left',
+            size: 'md',
+            weight: 'normal',
+          },
+        }),
       ]
     case 'quote':
       return [
-        createDefaultElement('quote-block', { content: { quote: '重要的引用金句放在这里', author: '作者姓名', role: '职位/出处', style: 'decorative' } }),
+        createDefaultElement('quote-block', {
+          content: {
+            quote: '重要的引用金句放在这里',
+            author: '作者姓名',
+            role: '职位/出处',
+            style: 'decorative',
+          },
+        }),
       ]
     case 'stats':
       return [
-        createDefaultElement('heading', { content: { text: '数据概览', variant: 'heading', alignment: 'left', size: '3xl', weight: 'bold' } }),
-        createDefaultElement('stat-card', { content: { value: '1,234', label: '用户数', trend: 'up', trendValue: '+12.5%', icon: 'Users', color: '#6366F1' } }),
-        createDefaultElement('stat-card', { animation: { ...createDefaultElement('stat-card').animation, delay: 0.1 }, content: { value: '98.5%', label: '满意度', trend: 'up', trendValue: '+2.1%', icon: 'Heart', color: '#EC4899' } }),
-        createDefaultElement('stat-card', { animation: { ...createDefaultElement('stat-card').animation, delay: 0.2 }, content: { value: '567', label: '订单数', trend: 'down', trendValue: '-3.2%', icon: 'ShoppingCart', color: '#F59E0B' } }),
-        createDefaultElement('stat-card', { animation: { ...createDefaultElement('stat-card').animation, delay: 0.3 }, content: { value: '$12K', label: '营收', trend: 'up', trendValue: '+8.7%', icon: 'DollarSign', color: '#10B981' } }),
+        createDefaultElement('heading', {
+          content: {
+            text: '数据概览',
+            variant: 'heading',
+            alignment: 'left',
+            size: '3xl',
+            weight: 'bold',
+          },
+        }),
+        createDefaultElement('stat-card', {
+          content: {
+            value: '1,234',
+            label: '用户数',
+            trend: 'up',
+            trendValue: '+12.5%',
+            icon: 'Users',
+            color: '#6366F1',
+          },
+        }),
+        createDefaultElement('stat-card', {
+          animation: { ...createDefaultElement('stat-card').animation, delay: 0.1 },
+          content: {
+            value: '98.5%',
+            label: '满意度',
+            trend: 'up',
+            trendValue: '+2.1%',
+            icon: 'Heart',
+            color: '#EC4899',
+          },
+        }),
+        createDefaultElement('stat-card', {
+          animation: { ...createDefaultElement('stat-card').animation, delay: 0.2 },
+          content: {
+            value: '567',
+            label: '订单数',
+            trend: 'down',
+            trendValue: '-3.2%',
+            icon: 'ShoppingCart',
+            color: '#F59E0B',
+          },
+        }),
+        createDefaultElement('stat-card', {
+          animation: { ...createDefaultElement('stat-card').animation, delay: 0.3 },
+          content: {
+            value: '$12K',
+            label: '营收',
+            trend: 'up',
+            trendValue: '+8.7%',
+            icon: 'DollarSign',
+            color: '#10B981',
+          },
+        }),
       ]
     case 'timeline':
       return [
-        createDefaultElement('heading', { content: { text: '发展历程', variant: 'heading', alignment: 'left', size: '3xl', weight: 'bold' } }),
-        createDefaultElement('timeline-node', { content: { date: '2020', title: '创业起步', description: '公司成立，开始产品研发', icon: 'Rocket' } }),
-        createDefaultElement('timeline-node', { animation: { ...createDefaultElement('timeline-node').animation, delay: 0.15 }, content: { date: '2021', title: '产品发布', description: '第一版产品正式上线', icon: 'Package' } }),
-        createDefaultElement('timeline-node', { animation: { ...createDefaultElement('timeline-node').animation, delay: 0.3 }, content: { date: '2023', title: '快速增长', description: '用户突破百万，获新一轮融资', icon: 'TrendingUp' } }),
-        createDefaultElement('timeline-node', { animation: { ...createDefaultElement('timeline-node').animation, delay: 0.45 }, content: { date: '2025', title: '行业领先', description: '成为行业标杆企业', icon: 'Trophy' } }),
+        createDefaultElement('heading', {
+          content: {
+            text: '发展历程',
+            variant: 'heading',
+            alignment: 'left',
+            size: '3xl',
+            weight: 'bold',
+          },
+        }),
+        createDefaultElement('timeline-node', {
+          content: {
+            date: '2020',
+            title: '创业起步',
+            description: '公司成立，开始产品研发',
+            icon: 'Rocket',
+          },
+        }),
+        createDefaultElement('timeline-node', {
+          animation: { ...createDefaultElement('timeline-node').animation, delay: 0.15 },
+          content: {
+            date: '2021',
+            title: '产品发布',
+            description: '第一版产品正式上线',
+            icon: 'Package',
+          },
+        }),
+        createDefaultElement('timeline-node', {
+          animation: { ...createDefaultElement('timeline-node').animation, delay: 0.3 },
+          content: {
+            date: '2023',
+            title: '快速增长',
+            description: '用户突破百万，获新一轮融资',
+            icon: 'TrendingUp',
+          },
+        }),
+        createDefaultElement('timeline-node', {
+          animation: { ...createDefaultElement('timeline-node').animation, delay: 0.45 },
+          content: {
+            date: '2025',
+            title: '行业领先',
+            description: '成为行业标杆企业',
+            icon: 'Trophy',
+          },
+        }),
       ]
     case 'comparison':
       return [
-        createDefaultElement('heading', { content: { text: '对比分析', variant: 'heading', alignment: 'center', size: '3xl', weight: 'bold' } }),
-        createDefaultElement('comparison-row', { content: { label: '价格', leftValue: '免费', rightValue: '$99/月', leftDetail: '基础功能', rightDetail: '全部功能' } }),
-        createDefaultElement('comparison-row', { animation: { ...createDefaultElement('comparison-row').animation, delay: 0.1 }, content: { label: '速度', leftValue: '快', rightValue: '较慢', leftDetail: '轻量架构', rightDetail: '功能复杂', leftIcon: 'Zap', rightIcon: 'Clock' } }),
-        createDefaultElement('comparison-row', { animation: { ...createDefaultElement('comparison-row').animation, delay: 0.2 }, content: { label: '易用性', leftValue: '简单', rightValue: '复杂', leftDetail: '上手容易', rightDetail: '学习曲线陡峭', leftIcon: 'Check', rightIcon: 'AlertTriangle' } }),
+        createDefaultElement('heading', {
+          content: {
+            text: '对比分析',
+            variant: 'heading',
+            alignment: 'center',
+            size: '3xl',
+            weight: 'bold',
+          },
+        }),
+        createDefaultElement('comparison-row', {
+          content: {
+            label: '价格',
+            leftValue: '免费',
+            rightValue: '$99/月',
+            leftDetail: '基础功能',
+            rightDetail: '全部功能',
+          },
+        }),
+        createDefaultElement('comparison-row', {
+          animation: { ...createDefaultElement('comparison-row').animation, delay: 0.1 },
+          content: {
+            label: '速度',
+            leftValue: '快',
+            rightValue: '较慢',
+            leftDetail: '轻量架构',
+            rightDetail: '功能复杂',
+            leftIcon: 'Zap',
+            rightIcon: 'Clock',
+          },
+        }),
+        createDefaultElement('comparison-row', {
+          animation: { ...createDefaultElement('comparison-row').animation, delay: 0.2 },
+          content: {
+            label: '易用性',
+            leftValue: '简单',
+            rightValue: '复杂',
+            leftDetail: '上手容易',
+            rightDetail: '学习曲线陡峭',
+            leftIcon: 'Check',
+            rightIcon: 'AlertTriangle',
+          },
+        }),
       ]
     case 'full-image':
       return [
-        createDefaultElement('image', { content: { src: '', alt: '背景图', fit: 'cover', caption: '', position: 'background' } }),
-        createDefaultElement('heading', { content: { text: '图片标题', variant: 'heading', alignment: 'center', size: '4xl', weight: 'bold' }, style: { color: '#FFFFFF' } }),
-        createDefaultElement('subheading', { animation: { ...createDefaultElement('subheading').animation, delay: 0.2 }, content: { text: '图片副标题或描述文字', variant: 'subheading', alignment: 'center', size: 'lg', weight: 'normal' }, style: { color: '#D6D3D1' } }),
+        createDefaultElement('image', {
+          content: { src: '', alt: '背景图', fit: 'cover', caption: '', position: 'background' },
+        }),
+        createDefaultElement('heading', {
+          content: {
+            text: '图片标题',
+            variant: 'heading',
+            alignment: 'center',
+            size: '4xl',
+            weight: 'bold',
+          },
+          style: { color: '#FFFFFF' },
+        }),
+        createDefaultElement('subheading', {
+          animation: { ...createDefaultElement('subheading').animation, delay: 0.2 },
+          content: {
+            text: '图片副标题或描述文字',
+            variant: 'subheading',
+            alignment: 'center',
+            size: 'lg',
+            weight: 'normal',
+          },
+          style: { color: '#D6D3D1' },
+        }),
       ]
     case 'html':
       return [
         createDefaultElement('html-content', {
           content: { html: '<div class="slide"><p>HTML 内容</p></div>', css: '' },
-          animation: { preset: 'fadeIn', delay: 0, duration: 0.5, easing: 'easeOut', staggerChildren: 0 },
+          animation: {
+            preset: 'fadeIn',
+            delay: 0,
+            duration: 0.5,
+            easing: 'easeOut',
+            staggerChildren: 0,
+          },
         }),
       ]
     case 'content':
       return [
-        createDefaultElement('heading', { content: { text: '内容标题', variant: 'heading', alignment: 'left', size: '3xl', weight: 'bold' } }),
+        createDefaultElement('heading', {
+          content: {
+            text: '内容标题',
+            variant: 'heading',
+            alignment: 'left',
+            size: '3xl',
+            weight: 'bold',
+          },
+        }),
         createDefaultElement('tag-row', { content: { tags: ['阶段一', '进行中'] } }),
         createDefaultElement('callout', {
-          content: { variant: 'doing' as const, title: '已完成的工作', body: '描述已经完成的内容...' },
-          animation: { preset: 'fadeInUp', delay: 0.1, duration: 0.5, easing: 'easeOut', staggerChildren: 0 },
+          content: {
+            variant: 'doing' as const,
+            title: '已完成的工作',
+            body: '描述已经完成的内容...',
+          },
+          animation: {
+            preset: 'fadeInUp',
+            delay: 0.1,
+            duration: 0.5,
+            easing: 'easeOut',
+            staggerChildren: 0,
+          },
         }),
         createDefaultElement('callout', {
-          content: { variant: 'not-do' as const, title: '尚未完成的工作', body: '描述尚未完成的内容...' },
-          animation: { preset: 'fadeInUp', delay: 0.2, duration: 0.5, easing: 'easeOut', staggerChildren: 0 },
+          content: {
+            variant: 'not-do' as const,
+            title: '尚未完成的工作',
+            body: '描述尚未完成的内容...',
+          },
+          animation: {
+            preset: 'fadeInUp',
+            delay: 0.2,
+            duration: 0.5,
+            easing: 'easeOut',
+            staggerChildren: 0,
+          },
         }),
         createDefaultElement('gloss', {
-          content: { items: [{ term: '术语A', definition: '定义说明' }, { term: '术语B', definition: '定义说明' }] },
-          animation: { preset: 'fadeIn', delay: 0.4, duration: 0.5, easing: 'easeOut', staggerChildren: 0 },
+          content: {
+            items: [
+              { term: '术语A', definition: '定义说明' },
+              { term: '术语B', definition: '定义说明' },
+            ],
+          },
+          animation: {
+            preset: 'fadeIn',
+            delay: 0.4,
+            duration: 0.5,
+            easing: 'easeOut',
+            staggerChildren: 0,
+          },
         }),
       ]
     default:
@@ -187,7 +485,9 @@ interface EditorState {
   // Actions - Slides
   setCurrentSlide: (slideId: string) => void
   addSlide: (templateId?: string) => void
-  importSlidesFromHTML: (slides: { title: string; html: string; css: string; index: number }[]) => void
+  importSlidesFromHTML: (
+    slides: { title: string; html: string; css: string; index: number }[],
+  ) => void
   importSlidesFromJSON: (project: { title: string; slides: Slide[]; settings?: any }) => void
   duplicateSlide: (slideId: string) => void
   deleteSlide: (slideId: string) => void
@@ -201,7 +501,11 @@ interface EditorState {
   // Actions - Elements
   addElement: (slideId: string, type: string) => void
   updateElement: (slideId: string, elementId: string, updates: Partial<SlideElement>) => void
-  updateElementContent: (slideId: string, elementId: string, contentUpdates: Record<string, any>) => void
+  updateElementContent: (
+    slideId: string,
+    elementId: string,
+    contentUpdates: Record<string, any>,
+  ) => void
   deleteElement: (slideId: string, elementId: string) => void
   setSelectedElement: (elementId: string | null) => void
 
@@ -267,13 +571,21 @@ export const useEditorStore = create<EditorState>()(
             subtitle: '',
             content: '',
             notes: '',
-            elements: [{
-              id: generateId(),
-              type: 'html-content',
-              content: { html, css },
-              animation: { preset: 'fadeIn', delay: 0, duration: 0.5, easing: 'easeOut', staggerChildren: 0 },
-              style: {},
-            }],
+            elements: [
+              {
+                id: generateId(),
+                type: 'html-content',
+                content: { html, css },
+                animation: {
+                  preset: 'fadeIn',
+                  delay: 0,
+                  duration: 0.5,
+                  easing: 'easeOut',
+                  staggerChildren: 0,
+                },
+                style: {},
+              },
+            ],
             order: slides.length + i,
             animationPreset: 'gentle',
             transitionType: 'fade',
@@ -321,7 +633,7 @@ export const useEditorStore = create<EditorState>()(
         const deletedIndex = slides.findIndex((s) => s.id === slideId)
         const newCurrentId =
           get().currentSlideId === slideId
-            ? newSlides[Math.min(deletedIndex, newSlides.length - 1)]?.id ?? null
+            ? (newSlides[Math.min(deletedIndex, newSlides.length - 1)]?.id ?? null)
             : get().currentSlideId
         set({ slides: newSlides, currentSlideId: newCurrentId })
       },
@@ -357,16 +669,16 @@ export const useEditorStore = create<EditorState>()(
 
       updateSlideAnimation: (slideId, preset) =>
         set({
-          slides: get().slides.map((s) => (s.id === slideId ? { ...s, animationPreset: preset } : s)),
+          slides: get().slides.map((s) =>
+            s.id === slideId ? { ...s, animationPreset: preset } : s,
+          ),
         }),
 
       // Elements
       addElement: (slideId, type) =>
         set({
           slides: get().slides.map((s) =>
-            s.id === slideId
-              ? { ...s, elements: [...s.elements, createDefaultElement(type)] }
-              : s,
+            s.id === slideId ? { ...s, elements: [...s.elements, createDefaultElement(type)] } : s,
           ),
         }),
 
@@ -376,9 +688,7 @@ export const useEditorStore = create<EditorState>()(
             s.id === slideId
               ? {
                   ...s,
-                  elements: s.elements.map((e) =>
-                    e.id === elementId ? { ...e, ...updates } : e,
-                  ),
+                  elements: s.elements.map((e) => (e.id === elementId ? { ...e, ...updates } : e)),
                 }
               : s,
           ),
@@ -403,19 +713,15 @@ export const useEditorStore = create<EditorState>()(
       deleteElement: (slideId, elementId) =>
         set({
           slides: get().slides.map((s) =>
-            s.id === slideId
-              ? { ...s, elements: s.elements.filter((e) => e.id !== elementId) }
-              : s,
+            s.id === slideId ? { ...s, elements: s.elements.filter((e) => e.id !== elementId) } : s,
           ),
-          selectedElementId:
-            get().selectedElementId === elementId ? null : get().selectedElementId,
+          selectedElementId: get().selectedElementId === elementId ? null : get().selectedElementId,
         }),
 
       setSelectedElement: (elementId) => set({ selectedElementId: elementId }),
 
       // Settings
-      updateSettings: (newSettings) =>
-        set({ settings: { ...get().settings, ...newSettings } }),
+      updateSettings: (newSettings) => set({ settings: { ...get().settings, ...newSettings } }),
 
       // UI
       toggleTemplatePicker: () => set({ showTemplatePicker: !get().showTemplatePicker }),

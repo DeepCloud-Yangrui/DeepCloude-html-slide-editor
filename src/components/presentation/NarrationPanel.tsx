@@ -47,9 +47,7 @@ export default function NarrationPanel({ isOpen, onToggle, content, title }: Nar
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-4">
-              {title && (
-                <h4 className="text-white text-base font-semibold mb-3">{title}</h4>
-              )}
+              {title && <h4 className="text-white text-base font-semibold mb-3">{title}</h4>}
               <p className="text-stone-300 text-sm leading-relaxed whitespace-pre-wrap">
                 {content || '暂无演讲备注'}
               </p>
