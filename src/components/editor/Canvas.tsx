@@ -54,11 +54,11 @@ export default function Canvas() {
         <span>1280×720</span>
       </div>
 
-      {/* Slide frame */}
+      {/* Slide frame — fixed 960×540 CSS coordinate base for free template */}
       <div
         ref={canvasRef}
-        className="slide-shadow rounded-xl overflow-hidden bg-white"
-        style={{ width: 'min(90%, 800px)', aspectRatio: '16/9' }}
+        className="slide-shadow rounded-xl overflow-hidden bg-white flex-shrink-0"
+        style={{ width: '960px', height: '540px' }}
       >
         <TemplateRenderer
           slide={currentSlide}
