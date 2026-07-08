@@ -63,51 +63,70 @@ export function applyResizeDelta(
   deltaX: number,
   deltaY: number,
 ): ElementLayout {
-  let { x, y, width, height, zIndex } = startLayout
+  const { x, y, width, height, zIndex } = startLayout
+  // Fixed edges: when dragging left/top handles, the opposite edges stay put
+  const right = x + width
+  const bottom = y + height
+
+  let newX = x
+  let newY = y
+  let newW = width
+  let newH = height
 
   switch (handle) {
     case 'right':
-      width += deltaX
+      newW = width + deltaX
       break
     case 'bottom':
-      height += deltaY
+      newH = height + deltaY
       break
     case 'bottom-right':
-      width += deltaX
-      height += deltaY
+      newW = width + deltaX
+      newH = height + deltaY
       break
     case 'left':
-      x += deltaX
-      width -= deltaX
+      newW = width - deltaX
+      newX = right - newW
       break
     case 'top':
-      y += deltaY
-      height -= deltaY
+      newH = height - deltaY
+      newY = bottom - newH
       break
     case 'top-left':
-      x += deltaX
-      y += deltaY
-      width -= deltaX
-      height -= deltaY
+      newW = width - deltaX
+      newH = height - deltaY
+      newX = right - newW
+      newY = bottom - newH
       break
     case 'top-right':
-      y += deltaY
-      width += deltaX
-      height -= deltaY
+      newW = width + deltaX
+      newH = height - deltaY
+      newY = bottom - newH
       break
     case 'bottom-left':
-      x += deltaX
-      width -= deltaX
-      height += deltaY
+      newW = width - deltaX
+      newH = height + deltaY
+      newX = right - newW
       break
   }
 
-  width = Math.max(MIN_ELEMENT_WIDTH, Math.min(SLIDE_WIDTH, width))
-  height = Math.max(MIN_ELEMENT_HEIGHT, Math.min(SLIDE_HEIGHT, height))
-  if (x < 0) x = 0
-  if (y < 0) y = 0
-  if (x + width > SLIDE_WIDTH) x = SLIDE_WIDTH - width
-  if (y + height > SLIDE_HEIGHT) y = SLIDE_HEIGHT - height
+  // Clamp size
+  newW = Math.max(MIN_ELEMENT_WIDTH, Math.min(SLIDE_WIDTH, newW))
+  newH = Math.max(MIN_ELEMENT_HEIGHT, Math.min(SLIDE_HEIGHT, newH))
 
-  return { x, y, width, height, zIndex }
+  // Clamp position and ensure boundary fit
+  if (newX < 0) {
+    newX = 0
+  }
+  if (newY < 0) {
+    newY = 0
+  }
+  if (newX + newW > SLIDE_WIDTH) {
+    newX = SLIDE_WIDTH - newW
+  }
+  if (newY + newH > SLIDE_HEIGHT) {
+    newY = SLIDE_HEIGHT - newH
+  }
+
+  return { x: newX, y: newY, width: newW, height: newH, zIndex }
 }
