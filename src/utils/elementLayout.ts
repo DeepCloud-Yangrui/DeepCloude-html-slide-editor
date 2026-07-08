@@ -63,70 +63,47 @@ export function applyResizeDelta(
   deltaX: number,
   deltaY: number,
 ): ElementLayout {
-  const { x, y, width, height, zIndex } = startLayout
-  // Fixed edges: when dragging left/top handles, the opposite edges stay put
-  const right = x + width
-  const bottom = y + height
+  const zIndex = startLayout.zIndex
+  const left0 = startLayout.x
+  const top0 = startLayout.y
+  const right0 = startLayout.x + startLayout.width
+  const bottom0 = startLayout.y + startLayout.height
 
-  let newX = x
-  let newY = y
-  let newW = width
-  let newH = height
+  let left = left0
+  let right = right0
+  let top = top0
+  let bottom = bottom0
 
   switch (handle) {
     case 'right':
-      newW = width + deltaX
+      right = Math.max(left0 + MIN_ELEMENT_WIDTH, Math.min(SLIDE_WIDTH, right0 + deltaX))
       break
     case 'bottom':
-      newH = height + deltaY
+      bottom = Math.max(top0 + MIN_ELEMENT_HEIGHT, Math.min(SLIDE_HEIGHT, bottom0 + deltaY))
       break
     case 'bottom-right':
-      newW = width + deltaX
-      newH = height + deltaY
+      right = Math.max(left0 + MIN_ELEMENT_WIDTH, Math.min(SLIDE_WIDTH, right0 + deltaX))
+      bottom = Math.max(top0 + MIN_ELEMENT_HEIGHT, Math.min(SLIDE_HEIGHT, bottom0 + deltaY))
       break
     case 'left':
-      newW = width - deltaX
-      newX = right - newW
+      left = Math.max(0, Math.min(right0 - MIN_ELEMENT_WIDTH, left0 + deltaX))
       break
     case 'top':
-      newH = height - deltaY
-      newY = bottom - newH
+      top = Math.max(0, Math.min(bottom0 - MIN_ELEMENT_HEIGHT, top0 + deltaY))
       break
     case 'top-left':
-      newW = width - deltaX
-      newH = height - deltaY
-      newX = right - newW
-      newY = bottom - newH
+      left = Math.max(0, Math.min(right0 - MIN_ELEMENT_WIDTH, left0 + deltaX))
+      top = Math.max(0, Math.min(bottom0 - MIN_ELEMENT_HEIGHT, top0 + deltaY))
       break
     case 'top-right':
-      newW = width + deltaX
-      newH = height - deltaY
-      newY = bottom - newH
+      right = Math.max(left0 + MIN_ELEMENT_WIDTH, Math.min(SLIDE_WIDTH, right0 + deltaX))
+      top = Math.max(0, Math.min(bottom0 - MIN_ELEMENT_HEIGHT, top0 + deltaY))
       break
     case 'bottom-left':
-      newW = width - deltaX
-      newH = height + deltaY
-      newX = right - newW
+      left = Math.max(0, Math.min(right0 - MIN_ELEMENT_WIDTH, left0 + deltaX))
+      bottom = Math.max(top0 + MIN_ELEMENT_HEIGHT, Math.min(SLIDE_HEIGHT, bottom0 + deltaY))
       break
   }
 
-  // Clamp size
-  newW = Math.max(MIN_ELEMENT_WIDTH, Math.min(SLIDE_WIDTH, newW))
-  newH = Math.max(MIN_ELEMENT_HEIGHT, Math.min(SLIDE_HEIGHT, newH))
-
-  // Clamp position and ensure boundary fit
-  if (newX < 0) {
-    newX = 0
-  }
-  if (newY < 0) {
-    newY = 0
-  }
-  if (newX + newW > SLIDE_WIDTH) {
-    newX = SLIDE_WIDTH - newW
-  }
-  if (newY + newH > SLIDE_HEIGHT) {
-    newY = SLIDE_HEIGHT - newH
-  }
-
-  return { x: newX, y: newY, width: newW, height: newH, zIndex }
+  return { x: left, y: top, width: right - left, height: bottom - top, zIndex }
 }
