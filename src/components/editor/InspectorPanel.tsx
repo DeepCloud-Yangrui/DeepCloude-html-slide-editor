@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { FileText, Grid3X3, Settings, LayoutTemplate } from 'lucide-react'
 import { useEditorStore } from '@/store/useEditorStore'
 import { TEMPLATES } from '@/data/templates'
-import PropertiesPanel from './PropertiesPanel'
+import ContentPanel from './ContentPanel'
 
 type Tab = 'content' | 'templates' | 'settings'
 
@@ -41,7 +41,7 @@ export default function InspectorPanel() {
 
       {/* Tab content */}
       <div className="flex-1 overflow-y-auto">
-        {activeTab === 'content' && <PropertiesPanel />}
+        {activeTab === 'content' && <ContentPanel />}
         {activeTab === 'templates' && <TemplatePanel />}
         {activeTab === 'settings' && <SettingsPanel />}
       </div>
