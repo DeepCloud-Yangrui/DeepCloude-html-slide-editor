@@ -1,10 +1,26 @@
 // Independent HTML export
 import type { Slide, PresentationSettings } from '@/types'
 import { toInlineStyleString } from '@/utils/elementStyle'
+import { normalizeElementLayout } from '@/utils/elementLayout'
 
-function styleAttr(el: { style?: Record<string, string> }): string {
-  const css = toInlineStyleString(el.style)
-  return css ? ` style="${css}"` : ''
+function combinedAttr(el: {
+  style?: Record<string, string>
+  layout?: Record<string, number>
+}): string {
+  const layout = normalizeElementLayout(el.layout)
+  const styleStr = toInlineStyleString(el.style)
+  if (!layout && !styleStr) return ''
+  if (!layout) return ` style="${styleStr}"`
+  const parts = [
+    `position:absolute`,
+    `left:${layout.x}px`,
+    `top:${layout.y}px`,
+    `width:${layout.width}px`,
+    `height:${layout.height}px`,
+    `z-index:${layout.zIndex}`,
+  ]
+  if (styleStr) parts.push(styleStr)
+  return ` style="${parts.join(';')}"`
 }
 
 export function exportProjectToHTML(
@@ -56,15 +72,15 @@ function buildBasicHTML(title: string, slides: Slide[]): string {
           return `<div class="element" style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;">HTML 幻灯片（静态快照）</div>`
         }
         if (c.text)
-          return `<div class="text-block"${styleAttr(el)}><${c.variant === 'heading' ? 'h2' : 'p'}>${escapeHtml(c.text)}</${c.variant === 'heading' ? 'h2' : 'p'}></div>`
+          return `<div class="text-block"${combinedAttr(el)}><${c.variant === 'heading' ? 'h2' : 'p'}>${escapeHtml(c.text)}</${c.variant === 'heading' ? 'h2' : 'p'}></div>`
         if (c.title && c.description)
-          return `<div class="bullet"${styleAttr(el)}><strong>${escapeHtml(c.title)}</strong><p>${escapeHtml(c.description)}</p></div>`
+          return `<div class="bullet"${combinedAttr(el)}><strong>${escapeHtml(c.title)}</strong><p>${escapeHtml(c.description)}</p></div>`
         if (c.quote)
-          return `<blockquote${styleAttr(el)}>${escapeHtml(c.quote)}<footer>— ${escapeHtml(c.author || '')}</footer></blockquote>`
+          return `<blockquote${combinedAttr(el)}>${escapeHtml(c.quote)}<footer>— ${escapeHtml(c.author || '')}</footer></blockquote>`
         // stat-card
         if (c.value && c.label)
-          return `<div class="stat-card"${styleAttr(el)}><div class="stat-value">${escapeHtml(c.value)}</div><div class="stat-label">${escapeHtml(c.label)}</div></div>`
-        return `<div class="element"${styleAttr(el)}>${escapeHtml(JSON.stringify(c))}</div>`
+          return `<div class="stat-card"${combinedAttr(el)}><div class="stat-value">${escapeHtml(c.value)}</div><div class="stat-label">${escapeHtml(c.label)}</div></div>`
+        return `<div class="element"${combinedAttr(el)}>${escapeHtml(JSON.stringify(c))}</div>`
       })
       .join('\n    ')}
     ${slide.content ? `<div class="speaker-notes"><strong>备注：</strong>${escapeHtml(slide.content)}</div>` : ''}

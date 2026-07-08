@@ -1,5 +1,6 @@
 import { getTemplateById } from '@/data/templates'
 import { normalizeElementStyle } from '@/utils/elementStyle'
+import { normalizeElementLayout } from '@/utils/elementLayout'
 
 // Known element types from the type system
 const KNOWN_ELEMENT_TYPES = [
@@ -122,6 +123,7 @@ export function validateAndParseProject(raw: unknown): ValidationResult | Valida
       }
       // Normalize style on import — discard unknown keys and invalid values
       el.style = normalizeElementStyle(el.style)
+      el.layout = normalizeElementLayout(el.layout)
       validElements.push(el)
     }
     slide.elements = validElements
