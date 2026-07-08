@@ -1,10 +1,9 @@
 import { useEffect } from 'react'
 import { useEditorStore } from '@/store/useEditorStore'
-import Toolbar from './Toolbar'
-import Sidebar from './Sidebar'
+import TopBar from './TopBar'
+import SlideList from './SlideList'
 import Canvas from './Canvas'
-import PropertiesPanel from './PropertiesPanel'
-import TemplatePicker from './TemplatePicker'
+import InspectorPanel from './InspectorPanel'
 
 export default function EditorLayout() {
   const undo = useEditorStore((s) => s.undo)
@@ -14,9 +13,8 @@ export default function EditorLayout() {
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       const target = e.target as HTMLElement
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)
         return
-      }
       if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
         e.preventDefault()
         undo()
@@ -35,14 +33,13 @@ export default function EditorLayout() {
   }, [undo, redo])
 
   return (
-    <div className="h-screen flex flex-col bg-surface">
-      <Toolbar />
+    <div className="h-screen flex flex-col bg-stone-50">
+      <TopBar />
       <div className="flex-1 flex overflow-hidden">
-        <Sidebar />
+        <SlideList />
         <Canvas />
-        <PropertiesPanel />
+        <InspectorPanel />
       </div>
-      <TemplatePicker />
     </div>
   )
 }

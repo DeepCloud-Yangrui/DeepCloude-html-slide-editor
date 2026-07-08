@@ -6,12 +6,20 @@ import SelectionOverlay from './SelectionOverlay'
 export default function Canvas() {
   const canvasRef = useRef<HTMLDivElement>(null)
   const currentSlide = useCurrentSlide()
+  const slides = useEditorStore((s) => s.slides)
   const setSelectedElement = useEditorStore((s) => s.setSelectedElement)
   const updateElementContent = useEditorStore((s) => s.updateElementContent)
+  const currentIdx = currentSlide ? slides.findIndex((s) => s.id === currentSlide.id) + 1 : 0
 
   if (!currentSlide) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-stone-100/50">
+      <div
+        className="flex-1 flex items-center justify-center"
+        style={{
+          backgroundImage: 'radial-gradient(circle, #d6d3d1 0.5px, transparent 0.5px)',
+          backgroundSize: '20px 20px',
+        }}
+      >
         <div className="text-stone-400 text-sm">请选择或创建一张幻灯片</div>
       </div>
     )
@@ -28,12 +36,29 @@ export default function Canvas() {
   }
 
   return (
-    <div className="flex-1 flex items-center justify-center bg-stone-100/50 p-8">
+    <div
+      className="flex-1 flex flex-col items-center justify-center relative overflow-auto"
+      style={{
+        backgroundImage: 'radial-gradient(circle, #d6d3d1 0.5px, transparent 0.5px)',
+        backgroundSize: '20px 20px',
+      }}
+    >
+      {/* Page info bar */}
+      <div className="absolute top-3 left-1/2 -translate-x-1/2 flex items-center gap-3 text-xs text-stone-400 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-full border border-stone-200/60 z-10">
+        <span>
+          Page {currentIdx} / {slides.length}
+        </span>
+        <span className="w-px h-3 bg-stone-200" />
+        <span>16:9</span>
+        <span className="w-px h-3 bg-stone-200" />
+        <span>1280×720</span>
+      </div>
+
+      {/* Slide frame */}
       <div
         ref={canvasRef}
-        className="relative w-full max-w-[960px] slide-shadow rounded-lg overflow-hidden bg-white
-                   transition-shadow duration-300 hover:slide-shadow-hover"
-        style={{ aspectRatio: '16 / 9' }}
+        className="slide-shadow rounded-xl overflow-hidden bg-white"
+        style={{ width: 'min(90%, 800px)', aspectRatio: '16/9' }}
       >
         <TemplateRenderer
           slide={currentSlide}
