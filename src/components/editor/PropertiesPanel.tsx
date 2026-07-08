@@ -430,7 +430,7 @@ function StyleEditor({
       if (v === '' || v === undefined) {
         delete newStyle[k as keyof typeof newStyle]
       } else {
-        ;(newStyle as Record<string, string>)[k] = v
+        (newStyle as Record<string, string>)[k] = v
       }
     }
     updateElement(currentSlideId, element.id, { style: newStyle })
