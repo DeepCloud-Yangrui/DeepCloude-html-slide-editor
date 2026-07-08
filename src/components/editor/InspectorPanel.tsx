@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { FileText, Grid3X3, Settings } from 'lucide-react'
+import { FileText, Grid3X3, Settings, LayoutTemplate } from 'lucide-react'
 import { useEditorStore } from '@/store/useEditorStore'
+import { TEMPLATES } from '@/data/templates'
 import PropertiesPanel from './PropertiesPanel'
-import TemplatePicker from './TemplatePicker'
 
 type Tab = 'content' | 'templates' | 'settings'
 
@@ -50,19 +50,60 @@ export default function InspectorPanel() {
 }
 
 function TemplatePanel() {
-  const toggleTemplatePicker = useEditorStore((s) => s.toggleTemplatePicker)
+  const slides = useEditorStore((s) => s.slides)
+  const currentSlideId = useEditorStore((s) => s.currentSlideId)
+  const changeSlideTemplate = useEditorStore((s) => s.changeSlideTemplate)
+  const currentSlide = slides.find((s) => s.id === currentSlideId)
+
+  if (!currentSlide) {
+    return <div className="p-6 text-center text-sm text-stone-400">请先创建或选择一张页面</div>
+  }
 
   return (
-    <div className="p-4">
-      <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-3">模板</h3>
-      <button
-        onClick={toggleTemplatePicker}
-        className="w-full text-left px-3 py-2 rounded-lg border border-stone-200 text-sm text-stone-700
-                   hover:border-brand hover:text-brand transition-colors"
-      >
-        打开模板列表 →
-      </button>
-      <TemplatePicker />
+    <div className="p-3">
+      <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-3 px-1">
+        模板
+      </h3>
+      <div className="grid grid-cols-2 gap-2">
+        {TEMPLATES.map((t) => {
+          const isActive = currentSlide.templateId === t.id
+          return (
+            <button
+              key={t.id}
+              onClick={() => changeSlideTemplate(currentSlide.id, t.id)}
+              className={`group text-left rounded-xl overflow-hidden border transition-all duration-200
+                ${
+                  isActive
+                    ? 'border-brand ring-1 ring-brand/30'
+                    : 'border-stone-200 hover:border-stone-300 hover:shadow-sm'
+                }`}
+            >
+              {/* Preview gradient */}
+              <div
+                className="h-14 flex items-center justify-center"
+                style={{
+                  background: `linear-gradient(135deg, ${t.previewColors[0]}, ${t.previewColors[1]})`,
+                }}
+              >
+                <LayoutTemplate
+                  size={18}
+                  className={`${isActive ? 'text-white' : 'text-white/60'}`}
+                />
+              </div>
+              {/* Info */}
+              <div className="p-2">
+                <div className="text-xs font-semibold text-stone-800 truncate">{t.nameZh}</div>
+                <div className="text-[10px] text-stone-400 uppercase tracking-wider mt-0.5">
+                  {t.id.replace('-', ' ')}
+                </div>
+                <div className="text-[10px] text-stone-400 line-clamp-2 mt-0.5 leading-tight">
+                  {t.descriptionZh}
+                </div>
+              </div>
+            </button>
+          )
+        })}
+      </div>
     </div>
   )
 }
